@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caso Práctico: Selección de Modelos de Servicio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --aws-navy: #232F3E;
+            --aws-squid-ink: #16191f;
+            --aws-sky: #f8f9fa;
+            --aws-orange: #FF9900;
+            --aws-teal: #207695;
+            --aws-blue: #0073BB;
+            --aws-border-color: #e3e6e8;
+            --aws-text-color: #16191f;
+            --aws-text-light: #5f6b7a;
+            --success-green: #037f0c;
+            --warning-red: #d13212;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--aws-sky);
+            color: var(--aws-text-color);
+        }
+        
+        .choice-button {
+            transition: all 0.2s ease-in-out;
+            border: 2px solid var(--aws-border-color);
+        }
+        .choice-button:hover {
+            border-color: var(--aws-blue);
+            background-color: #e6f2fa;
+        }
+
+        .feedback-panel {
+            border-left: 5px solid;
+            transition: opacity 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <header class="bg-white shadow-sm sticky top-0 z-20">
+        <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+            <h1 class="text-3xl font-bold text-aws-squid-ink">Caso Práctico: Eligiendo el Modelo de Servicio Correcto</h1>
+            <p class="text-aws-text-light mt-1">Aplica tus conocimientos para guiar a InnovaTech Solutions en su viaje a la nube.</p>
+        </div>
+    </header>
+    
+    <main class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        <div class="bg-white p-8 rounded-lg shadow-md mb-8">
+            <h2 class="text-2xl font-semibold mb-3">El Desafío</h2>
+            <p class="text-aws-text-light">Eres el nuevo Arquitecto de Soluciones en **InnovaTech Solutions**, una empresa de software en crecimiento. Tu primera tarea es asesorar a diferentes equipos sobre la mejor estrategia para desplegar tres nuevas iniciativas en la nube. Para cada escenario, debes analizar los requisitos, considerar las compensaciones y recomendar el modelo de servicio (IaaS, PaaS o SaaS) más adecuado. Utiliza el **Modelo de Responsabilidad Compartida** y el **Marco de Decisión Estratégico** para justificar tus decisiones.</p>
+        </div>
+        
+        <!-- Scenario 1 -->
+        <div class="scenario-card bg-white p-8 rounded-lg shadow-md mb-8">
+            <h3 class="text-2xl font-bold mb-4 text-aws-teal">Escenario 1: "El Legado" - Migración del ERP Crítico</h3>
+            <p class="mb-4 text-aws-text-light">El departamento de finanzas utiliza un sistema de Planificación de Recursos Empresariales (ERP) que ha funcionado durante 10 años en un servidor físico en la oficina. El hardware está obsoleto y falla constantemente. El software del ERP requiere una versión muy específica y antigua de Red Hat Enterprise Linux y una base de datos Oracle 10g. El proveedor del ERP ya no existe y no hay presupuesto para modernizar el software, solo para moverlo ("lift-and-shift") a un lugar más fiable.</p>
+
+            <div class="analysis-box bg-gray-50 p-4 rounded-md mb-6 border border-gray-200">
+                <h4 class="font-semibold mb-2">Reflexión del Arquitecto:</h4>
+                <ul class="list-disc list-inside text-sm space-y-1 text-aws-text-light">
+                    <li>¿Cuál es la prioridad principal aquí: control total del entorno, velocidad de despliegue o facilidad de uso?</li>
+                    <li>¿Qué tan grande es la carga operativa que el equipo puede asumir según el modelo de responsabilidad? ¿Necesitan acceso al SO?</li>
+                    <li>¿Se requiere una personalización profunda a nivel de sistema operativo y base de datos para garantizar la compatibilidad?</li>
+                </ul>
+            </div>
+
+            <div class="choices mb-4">
+                <h4 class="font-semibold mb-3">¿Qué modelo de servicio recomendarías?</h4>
+                <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
+                    <button onclick="revealFeedback(1, 'iaas')" class="choice-button w-full sm:w-auto flex-1 text-center py-3 px-6 rounded-md font-semibold">IaaS</button>
+                    <button onclick="revealFeedback(1, 'paas')" class="choice-button w-full sm:w-auto flex-1 text-center py-3 px-6 rounded-md font-semibold">PaaS</button>
+                    <button onclick="revealFeedback(1, 'saas')" class="choice-button w-full sm:w-auto flex-1 text-center py-3 px-6 rounded-md font-semibold">SaaS</button>
+                </div>
+            </div>
+
+            <div id="feedback-1" class="feedback-panel hidden bg-gray-50 p-6 rounded-md">
+                <!-- Feedback content will be shown by JS -->
+            </div>
+        </div>
+
+        <!-- Scenario 2 -->
+        <div class="scenario-card bg-white p-8 rounded-lg shadow-md mb-8">
+            <h3 class="text-2xl font-bold mb-4 text-aws-teal">Escenario 2: "El Nuevo Producto" - Lanzamiento de App Web Moderna</h3>
+            <p class="mb-4 text-aws-text-light">Un equipo de desarrollo ágil ha construido una nueva aplicación web para clientes usando Node.js y una base de datos PostgreSQL. La principal prioridad del negocio es lanzar la aplicación al mercado lo más rápido posible para obtener feedback de los primeros usuarios. El equipo de desarrollo es pequeño y quiere centrarse exclusivamente en escribir código y añadir nuevas funcionalidades, no en gestionar servidores, parches de seguridad o configurar el escalado.</p>
+
+            <div class="analysis-box bg-gray-50 p-4 rounded-md mb-6 border border-gray-200">
+                <h4 class="font-semibold mb-2">Reflexión del Arquitecto:</h4>
+                <ul class="list-disc list-inside text-sm space-y-1 text-aws-text-light">
+                    <li>Según el marco de decisión, ¿qué es más importante: la velocidad de salida al mercado o la flexibilidad total?</li>
+                    <li>¿El equipo quiere asumir una carga operativa alta o baja?</li>
+                    <li>¿La aplicación utiliza tecnologías estándar (Node.js, PostgreSQL) que una plataforma gestionada podría soportar fácilmente?</li>
+                </ul>
+            </div>
+
+            <div class="choices mb-4">
+                <h4 class="font-semibold mb-3">¿Qué modelo de servicio recomendarías?</h4>
+                <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
+                    <button onclick="revealFeedback(2, 'iaas')" class="choice-button w-full sm:w-auto flex-1 text-center py-3 px-6 rounded-md font-semibold">IaaS</button>
+                    <button onclick="revealFeedback(2, 'paas')" class="choice-button w-full sm:w-auto flex-1 text-center py-3 px-6 rounded-md font-semibold">PaaS</button>
+                    <button onclick="revealFeedback(2, 'saas')" class="choice-button w-full sm:w-auto flex-1 text-center py-3 px-6 rounded-md font-semibold">SaaS</button>
+                </div>
+            </div>
+
+            <div id="feedback-2" class="feedback-panel hidden bg-gray-50 p-6 rounded-md">
+                <!-- Feedback content will be shown by JS -->
+            </div>
+        </div>
+        
+        <!-- Scenario 3 -->
+        <div class="scenario-card bg-white p-8 rounded-lg shadow-md">
+            <h3 class="text-2xl font-bold mb-4 text-aws-teal">Escenario 3: "La Herramienta Interna" - Un CRM para Ventas</h3>
+            <p class="mb-4 text-aws-text-light">El equipo de ventas ha crecido rápidamente y necesita urgentemente una herramienta de Gestión de Relaciones con Clientes (CRM) para gestionar sus contactos y oportunidades. Sus necesidades son estándar: seguimiento de clientes, gestión de pipeline de ventas y reportes básicos. No hay desarrolladores disponibles para construir una solución personalizada y la necesitan funcionando "para ayer". El presupuesto es operativo (OPEX), no de capital (CAPEX).</p>
+
+            <div class="analysis-box bg-gray-50 p-4 rounded-md mb-6 border border-gray-200">
+                <h4 class="font-semibold mb-2">Reflexión del Arquitecto:</h4>
+                <ul class="list-disc list-inside text-sm space-y-1 text-aws-text-light">
+                    <li>¿La necesidad es consumir un software o construir uno nuevo?</li>
+                    <li>¿Cuál es el requisito de velocidad de salida al mercado? ¿Se puede esperar a un ciclo de desarrollo?</li>
+                    <li>¿Quién debe ser responsable del mantenimiento del software, según el modelo de responsabilidad?</li>
+                </ul>
+            </div>
+
+            <div class="choices mb-4">
+                <h4 class="font-semibold mb-3">¿Qué modelo de servicio recomendarías?</h4>
+                <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
+                    <button onclick="revealFeedback(3, 'iaas')" class="choice-button w-full sm:w-auto flex-1 text-center py-3 px-6 rounded-md font-semibold">IaaS</button>
+                    <button onclick="revealFeedback(3, 'paas')" class="choice-button w-full sm:w-auto flex-1 text-center py-3 px-6 rounded-md font-semibold">PaaS</button>
+                    <button onclick="revealFeedback(3, 'saas')" class="choice-button w-full sm:w-auto flex-1 text-center py-3 px-6 rounded-md font-semibold">SaaS</button>
+                </div>
+            </div>
+
+            <div id="feedback-3" class="feedback-panel hidden bg-gray-50 p-6 rounded-md">
+                <!-- Feedback content will be shown by JS -->
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        const feedbackData = {
+            1: {
+                correct: 'iaas',
+                content: `
+                    <h4 class="font-bold text-lg mb-2 text-success-green">¡Correcto! La mejor opción es IaaS.</h4>
+                    <p class="mb-3"><strong>Justificación:</strong> El requisito principal es el <strong>control total</strong> sobre el entorno para garantizar la compatibilidad con un sistema operativo y una base de datos antiguos y específicos. La velocidad de mercado y la carga operativa no son las prioridades.</p>
+                    <ul class="list-disc list-inside space-y-2 text-sm">
+                        <li><strong>Marco de Decisión:</strong> Se necesita el <strong>máximo control y flexibilidad</strong>, que solo IaaS proporciona. Se sacrifica la velocidad de despliegue y se acepta una alta carga operativa.</li>
+                        <li><strong>Responsabilidad Compartida:</strong> El equipo de InnovaTech debe gestionar activamente el SO, el middleware, la base de datos y la aplicación. AWS solo se encarga de la infraestructura física subyacente. Esto es exactamente lo que necesitan para replicar su entorno on-premise.</li>
+                        <li><strong>Servicio AWS ideal:</strong> <strong>Amazon EC2</strong>, permitiéndoles elegir una AMI con la versión exacta de RHEL que necesitan e instalar su base de datos Oracle 10g.</li>
+                    </ul>
+                `
+            },
+            2: {
+                correct: 'paas',
+                content: `
+                    <h4 class="font-bold text-lg mb-2 text-success-green">¡Excelente! PaaS es la recomendación ideal.</h4>
+                    <p class="mb-3"><strong>Justificación:</strong> La prioridad absoluta es la <strong>velocidad de salida al mercado</strong> y minimizar la carga operativa para un equipo de desarrollo pequeño. Quieren enfocarse en el código, no en la infraestructura.</p>
+                    <ul class="list-disc list-inside space-y-2 text-sm">
+                        <li><strong>Marco de Decisión:</strong> PaaS ofrece una <strong>velocidad de despliegue muy alta</strong> y una <strong>carga operativa baja</strong>. Aunque se cede algo de control sobre el SO, la flexibilidad para la aplicación es más que suficiente.</li>
+                        <li><strong>Responsabilidad Compartida:</strong> El equipo solo se preocupa por su código (la aplicación) y sus datos. AWS gestiona el SO, los parches, el runtime, el escalado y el balanceo, liberando al equipo de estas tareas.</li>
+                        <li><strong>Servicios AWS ideales:</strong> <strong>AWS Elastic Beanstalk</strong> para la aplicación Node.js y <strong>Amazon RDS for PostgreSQL</strong> para la base de datos.</li>
+                    </ul>
+                `
+            },
+            3: {
+                correct: 'saas',
+                content: `
+                    <h4 class="font-bold text-lg mb-2 text-success-green">¡Exacto! SaaS es la única opción viable.</h4>
+                    <p class="mb-3"><strong>Justificación:</strong> El equipo necesita una solución de software completa, lista para usar y de forma inmediata. No tienen tiempo ni recursos para construir, solo para consumir.</p>
+                    <ul class="list-disc list-inside space-y-2 text-sm">
+                        <li><strong>Marco de Decisión:</strong> SaaS ofrece una <strong>velocidad de salida al mercado instantánea</strong> y una <strong>carga operativa cero</strong>. No se necesita flexibilidad de desarrollo, sino una funcionalidad estándar.</li>
+                        <li><strong>Responsabilidad Compartida:</strong> El equipo de ventas de InnovaTech solo es responsable de gestionar sus usuarios y los datos que introducen en el CRM. El proveedor de SaaS (por ejemplo, Salesforce, HubSpot, o una solución del AWS Marketplace) se encarga de todo lo demás.</li>
+                        <li><strong>Solución ideal:</strong> Adquirir una suscripción a un CRM líder del mercado. Es la forma más rápida y rentable de satisfacer esta necesidad de negocio.</li>
+                    </ul>
+                `
+            }
+        };
+
+        function revealFeedback(scenarioId, choice) {
+            const feedbackPanel = document.getElementById(`feedback-${scenarioId}`);
+            const data = feedbackData[scenarioId];
+            
+            let resultHtml;
+            if (choice === data.correct) {
+                resultHtml = data.content;
+                feedbackPanel.style.borderColor = 'var(--success-green)';
+            } else {
+                resultHtml = `
+                    <h4 class="font-bold text-lg mb-2 text-warning-red">Inténtalo de nuevo.</h4>
+                    <p class="mb-3">La opción <strong>${choice.toUpperCase()}</strong> no es la ideal en este caso. Piensa en la prioridad principal del escenario. ¿Es el control, la velocidad o la facilidad de uso?</p>
+                    <p class="text-sm">Por ejemplo, si un sistema requiere una versión de SO muy específica, ¿un modelo que abstrae el SO sería adecuado?</p>
+                `;
+                feedbackPanel.style.borderColor = 'var(--warning-red)';
+            }
+            
+            feedbackPanel.innerHTML = resultHtml;
+            feedbackPanel.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>

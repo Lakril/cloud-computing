@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glosario Interactivo de Términos de la Nube</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --aws-navy: #232F3E;
+            --aws-squid-ink: #16191f;
+            --aws-sky: #f2f3f3;
+            --aws-orange: #FF9900;
+            --aws-link-blue: #0073BB;
+            --aws-border-color: #e3e6e8;
+            --aws-text-color: #16191f;
+            --aws-text-light: #5f6b7a;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--aws-sky);
+            color: var(--aws-text-color);
+        }
+
+        .term-card {
+            border: 1px solid var(--aws-border-color);
+            transition: box-shadow 0.2s ease-in-out;
+        }
+
+        .term-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .term-header {
+            cursor: pointer;
+        }
+
+        .term-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out, padding 0.5s ease-out;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+        
+        .term-content.open {
+            max-height: 1000px; /* Large enough for content */
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+        
+        .chevron {
+            transition: transform 0.3s ease;
+        }
+        .chevron.rotated {
+            transform: rotate(90deg);
+        }
+        
+        #searchInput {
+            border: 1px solid var(--aws-border-color);
+        }
+        #searchInput:focus {
+            outline: 2px solid var(--aws-link-blue);
+            border-color: transparent;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <header class="bg-white shadow-sm sticky top-0 z-20">
+        <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+            <h1 class="text-3xl font-bold text-aws-squid-ink">Glosario Interactivo de la Nube</h1>
+            <p class="text-aws-text-light mt-1">Conceptos fundamentales de Cloud Computing, explicados de forma sencilla.</p>
+        </div>
+    </header>
+    
+    <main class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        <!-- Search and Filter Controls -->
+        <div class="mb-8">
+            <input type="text" id="searchInput" placeholder="Buscar un término..." class="w-full p-3 rounded-md shadow-sm focus:ring-2 focus:ring-aws-link-blue focus:border-transparent">
+        </div>
+        
+        <!-- Glossary List -->
+        <div id="glossaryContainer" class="space-y-4">
+            <!-- Terms will be injected here by JavaScript -->
+        </div>
+    </main>
+
+    <script>
+        const glossaryData = [
+            // Core Concepts
+            { term: "Cloud Computing (Computación en la Nube)", definition: "La entrega de servicios informáticos —incluidos servidores, almacenamiento, bases de datos, redes, software, análisis e inteligencia— a través de Internet ('la nube').", explanation: "En lugar de poseer y mantener tu propia infraestructura de computación, puedes acceder a estos servicios de un proveedor de nube. Esto ofrece innovación más rápida, recursos flexibles y economías de escala.", example: "Una startup utiliza servidores virtuales, almacenamiento y bases de datos de un proveedor de nube para lanzar su aplicación, evitando la compra costosa de hardware físico." },
+            { term: "On-Premise (En las Instalaciones)", definition: "Infraestructura de TI que una empresa aloja en sus propias instalaciones y gestiona con su propio personal.", explanation: "Es el modelo tradicional, opuesto a la nube. Ofrece control total pero requiere una gran inversión inicial (CAPEX), mantenimiento constante y es lento para escalar.", example: "Un banco mantiene sus servidores principales en un centro de datos de su propiedad para cumplir con regulaciones estrictas y tener control físico sobre el hardware." },
+            { term: "Infraestructura como Servicio (IaaS)", definition: "Un modelo de servicio en la nube que proporciona recursos de computación, almacenamiento y redes virtualizados bajo demanda.", explanation: "Es el nivel más básico, donde el proveedor gestiona el hardware físico y el cliente gestiona el sistema operativo, las aplicaciones y los datos. Ofrece la máxima flexibilidad y control.", example: "Una empresa 'alquila' máquinas virtuales para ejecutar su software personalizado, teniendo control total sobre el sistema operativo y las configuraciones." },
+            { term: "Plataforma como Servicio (PaaS)", definition: "Un modelo de servicio que proporciona un entorno de hardware y software para que los desarrolladores puedan construir, desplegar y gestionar aplicaciones.", explanation: "Abstrae la gestión de la infraestructura subyacente (servidores, SO, parches). El desarrollador solo se preocupa por su código y sus datos, lo que acelera el desarrollo.", example: "Un desarrollador sube su código Python a una plataforma PaaS, y esta se encarga automáticamente de desplegarlo, balancear la carga y escalar sin que el desarrollador gestione un solo servidor." },
+            { term: "Software como Servicio (SaaS)", definition: "Un modelo de servicio que ofrece aplicaciones de software listas para usar a través de Internet, bajo un modelo de suscripción.", explanation: "Es el nivel más alto de abstracción. El proveedor gestiona toda la pila tecnológica, desde el hardware hasta el software. El usuario simplemente consume el servicio.", example: "Utilizar un servicio de correo electrónico como Gmail o una herramienta de gestión de clientes como Salesforce." },
+            { term: "Nube Pública", definition: "Infraestructura de nube propiedad de un proveedor externo y compartida por múltiples organizaciones a través de Internet.", explanation: "Ofrece una enorme escalabilidad, un modelo de pago por uso y agilidad. Es el modelo de nube más común.", example: "Cualquier persona con una tarjeta de crédito puede registrarse y empezar a usar los servicios de proveedores como Google Cloud, Microsoft Azure o AWS." },
+            { term: "Nube Privada", definition: "Infraestructura de nube dedicada exclusivamente a una sola organización.", explanation: "Puede estar alojada en el centro de datos de la organización o por un tercero. Ofrece mayor control y seguridad, pero es más costosa y menos flexible que la nube pública.", example: "Una agencia gubernamental con datos altamente sensibles construye su propia nube interna para mantener un control estricto sobre la seguridad y el cumplimiento." },
+            { term: "Nube Híbrida", definition: "Un entorno que combina una nube privada con una o más nubes públicas, permitiendo que los datos y las aplicaciones se muevan entre ellas.", explanation: "Ofrece 'lo mejor de ambos mundos': la seguridad de la nube privada para cargas de trabajo sensibles y la escalabilidad de la nube pública para cargas de trabajo menos críticas.", example: "Una tienda online mantiene su base de datos de clientes en su nube privada, pero utiliza la nube pública para escalar su sitio web durante picos de tráfico como el Black Friday." },
+            
+            // Compute
+            { term: "Máquina Virtual (VM)", definition: "Una emulación de un sistema informático completo que se ejecuta sobre un hardware físico.", explanation: "Permite que múltiples sistemas operativos y aplicaciones se ejecuten en un solo servidor físico, de forma aislada. Es el pilar fundamental de IaaS.", example: "En lugar de comprar un servidor físico para una aplicación, se provisiona una VM en la nube en minutos y se instala el sistema operativo y el software necesarios." },
+            { term: "Contenedor", definition: "Una unidad de software ligera y ejecutable que empaqueta el código de una aplicación, sus bibliotecas y dependencias.", explanation: "A diferencia de las VMs, los contenedores comparten el mismo kernel del sistema operativo del anfitrión, lo que los hace mucho más ligeros y rápidos para iniciar. Proporcionan consistencia entre entornos de desarrollo, prueba y producción.", example: "Docker es la tecnología de contenedores más popular. Una aplicación se empaqueta en una imagen de Docker y se puede ejecutar de la misma manera en la laptop de un desarrollador o en un servidor de producción en la nube." },
+            { term: "Computación sin Servidor (Serverless)", definition: "Un modelo de ejecución en la nube en el que el proveedor de la nube gestiona dinámicamente la asignación de recursos de máquina.", explanation: "A pesar del nombre, sí hay servidores, pero los desarrolladores no tienen que gestionarlos. El código se ejecuta en respuesta a eventos y solo se paga por el tiempo de computación consumido.", example: "Crear una función que se activa cada vez que se sube una imagen a un servicio de almacenamiento, redimensiona la imagen y la guarda en otro lugar. Solo se paga por los milisegundos que tarda esa función en ejecutarse." },
+            { term: "Función como Servicio (FaaS)", definition: "Una categoría de servicios de computación sin servidor que permite a los usuarios ejecutar código en respuesta a eventos sin gestionar la infraestructura subyacente.", explanation: "FaaS es la implementación más común de la computación sin servidor. El código se organiza en pequeñas funciones independientes.", example: "Una función que se ejecuta cuando un usuario se registra, enviándole un correo electrónico de bienvenida." },
+            { term: "Orquestación", definition: "La gestión, coordinación y automatización complejas de múltiples sistemas informáticos, aplicaciones y servicios.", explanation: "En el contexto de los contenedores, un orquestador se encarga de desplegar, escalar, y gestionar la salud de cientos o miles de contenedores de forma automática.", example: "Kubernetes es el orquestador de contenedores más popular. Le dices 'quiero 5 réplicas de mi aplicación', y Kubernetes se encarga de distribuirlas en los servidores disponibles y mantenerlas en ejecución." },
+            { term: "Autoescalado (Autoscaling)", definition: "La capacidad de un sistema para ajustar automáticamente la cantidad de recursos de computación asignados a una aplicación en función de la demanda.", explanation: "Permite mantener el rendimiento durante picos de tráfico (escalado horizontal hacia afuera) y ahorrar costos durante períodos de baja demanda (escalado horizontal hacia adentro).", example: "Un sitio de comercio electrónico configura el autoescalado para agregar automáticamente más servidores web cuando el uso de la CPU supera el 70%, y eliminarlos cuando cae por debajo del 30%." },
+
+            // Storage
+            { term: "Almacenamiento de Objetos", definition: "Una arquitectura de almacenamiento de datos que gestiona los datos como objetos, a diferencia de otras arquitecturas como los sistemas de archivos o los bloques.", explanation: "Cada objeto incluye los datos, una cantidad variable de metadatos y un identificador único global. Es ideal para datos no estructurados, es altamente escalable y duradero.", example: "Guardar imágenes, videos, copias de seguridad y archivos de logs. Es la base de servicios como Dropbox." },
+            { term: "Almacenamiento en Bloques", definition: "Un tipo de almacenamiento que presenta los datos en volúmenes o 'bloques' de tamaño fijo.", explanation: "Se comporta como un disco duro físico conectado a un servidor. Ofrece baja latencia y es ideal para cargas de trabajo que requieren acceso rápido y frecuente a los datos, como las bases de datos transaccionales.", example: "El disco duro virtual de una máquina virtual (VM) donde se instala el sistema operativo y la base de datos." },
+            { term: "Almacenamiento de Archivos", definition: "Un sistema de almacenamiento jerárquico que organiza y presenta los datos como archivos y carpetas.", explanation: "Es el modelo con el que estamos familiarizados en nuestros computadores personales (carpetas dentro de carpetas). Es ideal para compartir archivos entre múltiples usuarios o servidores.", example: "Un servidor de archivos compartido en una red corporativa donde varios empleados pueden acceder y modificar los mismos documentos." },
+            { term: "Base de Datos", definition: "Una colección organizada de datos estructurados, generalmente almacenada y accedida electrónicamente desde un sistema informático.", explanation: "Existen muchos tipos, como las relacionales (SQL) que organizan los datos en tablas, y las no relacionales (NoSQL) que ofrecen modelos más flexibles (documentos, clave-valor, etc.).", example: "Una base de datos relacional para almacenar información de clientes y pedidos en una tienda en línea." },
+            { term: "Almacén de Datos (Data Warehouse)", definition: "Un sistema utilizado para el análisis y la generación de informes de datos. Es un repositorio central de datos integrados de una o más fuentes dispares.", explanation: "Está optimizado para consultas analíticas complejas (OLAP), no para transacciones rápidas (OLTP). Ayuda a las empresas a tomar decisiones basadas en datos históricos.", example: "Una empresa de retail carga los datos de ventas de todas sus tiendas en un data warehouse para analizar tendencias de compra por región y temporada." },
+            { term: "Lago de Datos (Data Lake)", definition: "Un repositorio de almacenamiento centralizado que permite almacenar todos sus datos estructurados y no estructurados a cualquier escala.", explanation: "A diferencia de un data warehouse, los datos se pueden almacenar en su formato nativo, sin necesidad de estructurarlos primero. Esto ofrece una gran flexibilidad para análisis futuros y machine learning.", example: "Una empresa de IoT almacena datos crudos de sensores, logs de aplicaciones y datos de redes sociales en un data lake para su posterior análisis por científicos de datos." },
+            { term: "Red de Entrega de Contenido (CDN)", definition: "Un sistema de servidores distribuidos geográficamente que trabajan juntos para proporcionar una entrega rápida de contenido de Internet.", explanation: "Almacena en caché (copias) del contenido estático (imágenes, videos, CSS) en ubicaciones cercanas a los usuarios finales. Esto reduce la latencia y la carga en el servidor de origen.", example: "Un periódico en línea utiliza una CDN para que las imágenes de las noticias se carguen casi instantáneamente para sus lectores en todo el mundo." },
+            
+            // Networking
+            { term: "Nube Privada Virtual (VPC)", definition: "Una sección lógicamente aislada de una nube pública donde se pueden lanzar recursos en una red virtual que se define.", explanation: "Permite tener control total sobre el entorno de red virtual, incluida la selección de su propio rango de direcciones IP, la creación de subredes y la configuración de tablas de enrutamiento y puertas de enlace de red.", example: "Crear una VPC para una aplicación de tres capas, con una subred pública para los servidores web y una subred privada para las bases de datos, que no son accesibles directamente desde Internet." },
+            { term: "Subred", definition: "Un rango de direcciones IP dentro de una VPC.", explanation: "Las subredes se utilizan para segmentar la red y se pueden clasificar como públicas (con acceso a Internet) o privadas (sin acceso directo a Internet).", example: "Colocar los servidores web en una subred pública para que puedan recibir tráfico de usuarios, y las bases de datos en una subred privada para protegerlas." },
+            { term: "Cortafuegos (Firewall)", definition: "Un dispositivo de seguridad de red que monitorea el tráfico de red entrante y saliente y decide si permite o bloquea dicho tráfico en función de un conjunto definido de reglas de seguridad.", explanation: "Actúa como una barrera entre una red interna de confianza y una red externa que no es de confianza, como Internet.", example: "Configurar una regla en un firewall para permitir el tráfico web (puerto 443) a los servidores web, pero bloquear todo el resto del tráfico entrante." },
+            { term: "Balanceador de Carga", definition: "Un dispositivo que distribuye el tráfico de red o de aplicaciones entre múltiples servidores.", explanation: "Se utiliza para aumentar la capacidad (solicitudes concurrentes) y la fiabilidad de las aplicaciones. Si un servidor falla, el balanceador de carga deja de enviarle tráfico.", example: "Colocar un balanceador de carga delante de un grupo de tres servidores web para distribuir las solicitudes de los usuarios de manera uniforme entre ellos." },
+            { term: "Red Privada Virtual (VPN)", definition: "Una conexión segura y cifrada a través de una red pública (como Internet) a una red privada.", explanation: "Permite a los usuarios remotos o a las oficinas conectarse de forma segura a la red corporativa en la nube como si estuvieran físicamente allí.", example: "Un desarrollador que trabaja desde casa utiliza una VPN para conectarse de forma segura a la VPC de la empresa y acceder a las bases de datos internas." },
+            { term: "DNS (Sistema de Nombres de Dominio)", definition: "El servicio de Internet que traduce los nombres de dominio (como www.ejemplo.com) en direcciones IP numéricas (como 192.0.2.1).", explanation: "Es la 'guía telefónica' de Internet. Permite a los usuarios acceder a sitios web utilizando nombres fáciles de recordar en lugar de direcciones IP complejas.", example: "Cuando un usuario escribe 'google.com' en su navegador, una consulta DNS traduce ese nombre a una dirección IP a la que el navegador puede conectarse." },
+            { term: "Puerta de Enlace de API (API Gateway)", definition: "Un servicio que actúa como un único punto de entrada para un grupo de microservicios.", explanation: "Maneja tareas como la autenticación, el enrutamiento de solicitudes, el monitoreo y la limitación de velocidad, permitiendo que los microservicios se centren en su lógica de negocio.", example: "Una aplicación móvil realiza una sola llamada a un API Gateway, que luego enruta las solicitudes a diferentes microservicios (usuarios, productos, pagos) de forma transparente." },
+            { term: "Ubicación de Borde (Edge Location)", definition: "Un centro de datos más pequeño, propiedad de un proveedor de nube, ubicado cerca de grandes centros de población.", explanation: "Se utiliza para servicios como las CDNs y el enrutamiento de DNS para ofrecer baja latencia a los usuarios finales de esa área geográfica.", example: "Una CDN utiliza una ubicación de borde en Bogotá para servir contenido a los usuarios colombianos mucho más rápido que si tuvieran que obtenerlo de un servidor principal en Estados Unidos." },
+
+            // Architecture & Design
+            { term: "Microservicios", definition: "Un estilo de arquitectura que estructura una aplicación como una colección de servicios pequeños, autónomos y débilmente acoplados.", explanation: "Cada servicio se centra en una capacidad de negocio específica y puede ser desarrollado, desplegado y escalado de forma independiente. Esto fomenta la agilidad y la resiliencia.", example: "Una aplicación de comercio electrónico se divide en microservicios: uno para el catálogo de productos, otro para el carrito de compras y otro para el sistema de pagos." },
+            { term: "Arquitectura Monolítica", definition: "Un estilo de arquitectura tradicional en el que una aplicación se construye como una única unidad unificada.", explanation: "Todos los componentes están interconectados y son interdependientes. Es más simple de desarrollar al principio, pero se vuelve difícil de escalar, mantener y actualizar a medida que crece.", example: "Una aplicación web donde la interfaz de usuario, la lógica de negocio y el acceso a datos están todos empaquetados en un solo archivo desplegable." },
+            { term: "Alta Disponibilidad (High Availability - HA)", definition: "La capacidad de un sistema para operar continuamente sin fallos durante un período de tiempo designado.", explanation: "Se logra eliminando puntos únicos de fallo (SPOFs) mediante la redundancia. Si un componente falla, otro idéntico toma su lugar sin que el usuario lo note.", example: "Desplegar una aplicación en dos o más servidores detrás de un balanceador de carga. Si un servidor falla, el balanceador lo detecta y deja de enviarle tráfico." },
+            { term: "Tolerancia a Fallos (Fault Tolerance)", definition: "La propiedad que permite a un sistema continuar operando correctamente en caso de fallo de uno o más de sus componentes.", explanation: "Es un nivel más alto que la alta disponibilidad. Mientras que HA busca minimizar el tiempo de inactividad, la tolerancia a fallos busca garantizar cero tiempo de inactividad.", example: "Sistemas de hardware con fuentes de alimentación y discos duros redundantes que pueden fallar sin interrumpir el servicio." },
+            { term: "Recuperación ante Desastres (Disaster Recovery - DR)", definition: "El conjunto de políticas, herramientas y procedimientos para permitir la recuperación o continuación de la infraestructura y los sistemas tecnológicos vitales después de un desastre natural o provocado por el hombre.", explanation: "Se centra en cómo recuperarse de un evento catastrófico que afecta a todo un centro de datos o región geográfica.", example: "Mantener una copia completa de la infraestructura de producción en una región geográfica diferente y tener un plan para conmutar el tráfico a esa región si la principal queda inoperativa." },
+            { term: "Escalabilidad", definition: "La capacidad de un sistema para manejar una carga de trabajo creciente.", explanation: "Hay dos tipos principales: vertical (aumentar el tamaño de un solo recurso, como añadir más RAM a un servidor) y horizontal (añadir más recursos, como añadir más servidores a un clúster).", example: "Un sistema es escalable si puede pasar de manejar 100 a 10,000 usuarios simultáneos simplemente añadiendo más servidores." },
+            { term: "Elasticidad", definition: "La capacidad de un sistema para adquirir recursos a medida que los necesita y liberarlos cuando ya no los necesita.", explanation: "Es un concepto clave de la nube, estrechamente relacionado con el autoescalado. Permite a los sistemas adaptarse automáticamente a las fluctuaciones de la demanda, optimizando tanto el rendimiento como los costos.", example: "Una plataforma de streaming de video que provisiona automáticamente más servidores durante el estreno de una serie popular y los libera una vez que el pico de visualización ha pasado." },
+            { term: "Latencia", definition: "El tiempo de retardo entre la causa y el efecto de algún cambio físico en el sistema que se está observando. En redes, es el tiempo que tarda un paquete en viajar de un punto a otro.", explanation: "Una baja latencia es crucial para aplicaciones interactivas como los videojuegos en línea o las videoconferencias.", example: "La latencia entre un usuario en Colombia y un servidor en Japón será mucho mayor que la latencia a un servidor en Brasil." },
+            { term: "Rendimiento (Throughput)", definition: "La cantidad de datos que se pueden transferir de un punto a otro en un período de tiempo determinado.", explanation: "Se mide comúnmente en bits por segundo (bps). Un alto rendimiento es importante para cargas de trabajo que mueven grandes cantidades de datos, como el análisis de video o el big data.", example: "Una conexión de red con un rendimiento de 1 Gbps puede transferir datos más rápido que una de 100 Mbps." },
+            
+            // DevOps & Operations
+            { term: "Integración Continua / Entrega Continua (CI/CD)", definition: "Un método para entregar aplicaciones a los clientes con frecuencia mediante la introducción de la automatización en las etapas de desarrollo de aplicaciones.", explanation: "CI se refiere a la creación y prueba automatizada del código cada vez que un desarrollador realiza un cambio. CD se refiere al despliegue automático de esos cambios en un entorno de prueba o producción.", example: "Un pipeline de CI/CD que automáticamente prueba y despliega el código de una aplicación en producción minutos después de que un desarrollador lo sube al repositorio." },
+            { term: "Infraestructura como Código (IaC)", definition: "La práctica de gestionar y aprovisionar la infraestructura de TI a través de archivos de definición legibles por máquina, en lugar de la configuración manual.", explanation: "Permite tratar la infraestructura (servidores, redes, bases de datos) de la misma manera que el código de la aplicación: se puede versionar, probar y replicar de forma consistente.", example: "Usar herramientas como Terraform o CloudFormation para definir una arquitectura de red completa en un archivo de texto, que luego se puede desplegar en cualquier región de la nube con un solo comando." },
+            { term: "Monitoreo", definition: "El proceso de recopilar, analizar y utilizar información para rastrear el progreso hacia la consecución de los objetivos y guiar las decisiones de gestión.", explanation: "En TI, se refiere a la supervisión de métricas clave del sistema (uso de CPU, memoria, latencia de red) para detectar problemas de rendimiento o fallos.", example: "Configurar alertas que notifiquen al equipo de operaciones si el uso de la CPU de un servidor supera el 90% durante más de 5 minutos." },
+            { term: "Registro (Logging)", definition: "El proceso de registrar eventos que ocurren en un sistema de software.", explanation: "Los logs son cruciales para la depuración de problemas, la auditoría de seguridad y la comprensión del comportamiento de una aplicación.", example: "Una aplicación web registra cada solicitud de usuario, incluyendo la IP, la página solicitada y si la solicitud tuvo éxito o falló." },
+            { term: "Observabilidad", definition: "La capacidad de medir el estado interno de un sistema a partir de los datos que genera externamente (logs, métricas y trazas).", explanation: "Es un concepto más amplio que el monitoreo. Mientras que el monitoreo te dice *si* algo está mal, la observabilidad te ayuda a entender *por qué* está mal, incluso en sistemas complejos y distribuidos.", example: "Combinar métricas de CPU (monitoreo), logs de errores de la aplicación (logging) y trazas de solicitudes distribuidas para diagnosticar un problema de lentitud en un sistema de microservicios." },
+            { term: "Aprovisionamiento", definition: "El proceso de configurar la infraestructura de TI. También puede referirse a los pasos necesarios para gestionar el acceso a los datos y recursos.", explanation: "En la nube, el aprovisionamiento se refiere a la creación de nuevos recursos como máquinas virtuales, bases de datos o redes.", example: "Aprovisionar un nuevo servidor web para manejar el aumento de tráfico esperado para una campaña de marketing." },
+
+            // Security & Identity
+            { term: "Gestión de Identidad y Acceso (IAM)", definition: "Un marco de políticas y tecnologías para garantizar que las personas adecuadas tengan el acceso apropiado a los recursos tecnológicos.", explanation: "Se basa en los principios de autenticación (¿quién eres?) y autorización (¿qué tienes permitido hacer?).", example: "Crear un grupo de 'Desarrolladores' en IAM y darle permisos solo para gestionar servidores, pero no para modificar la configuración de seguridad." },
+            { term: "Cifrado (Encryption)", definition: "El proceso de convertir datos de un formato legible (texto plano) a un formato codificado (texto cifrado) que solo puede ser leído o procesado después de ser descifrado.", explanation: "Es fundamental para proteger la confidencialidad de los datos, tanto cuando están almacenados (en reposo) como cuando se transmiten a través de una red (en tránsito).", example: "Cifrar el disco duro de una base de datos para que si alguien obtiene acceso físico al disco, no pueda leer los datos." },
+            { term: "Autenticación Multifactor (MFA)", definition: "Un método de autenticación en el que a un usuario se le concede acceso a un sitio web o aplicación solo después de presentar con éxito dos o más pruebas (o factores) a un mecanismo de autenticación.", explanation: "Añade una capa crítica de seguridad, ya que comprometer solo la contraseña no es suficiente para obtener acceso.", example: "Iniciar sesión con una contraseña (algo que sabes) y un código de un solo uso de una aplicación en tu teléfono (algo que tienes)." },
+            { term: "Cumplimiento (Compliance)", definition: "La conformidad con un conjunto de reglas, como una especificación, política, estándar o ley.", explanation: "En la nube, se refiere a la adhesión a regulaciones de la industria o gubernamentales que dictan cómo se deben manejar los datos.", example: "Una empresa de salud debe cumplir con la ley HIPAA, que tiene reglas estrictas sobre cómo se debe almacenar y proteger la información del paciente." },
+            { term: "Modelo de Responsabilidad Compartida", definition: "Un marco de seguridad en la nube que dicta las obligaciones de seguridad del proveedor de la nube y del cliente.", explanation: "Generalmente, el proveedor es responsable de la seguridad 'de' la nube (el hardware, la red global), mientras que el cliente es responsable de la seguridad 'en' la nube (sus datos, configuraciones, permisos).", example: "El proveedor de la nube es responsable de parchear el hipervisor, pero el cliente es responsable de parchear el sistema operativo de sus máquinas virtuales." },
+
+            // Cost & Economics
+            { term: "Pago por Uso (Pay-as-you-go)", definition: "Un modelo de precios en el que un cliente paga por un servicio en función de la cantidad que consume, sin un contrato a largo plazo.", explanation: "Es el modelo de precios fundamental de la nube, que permite a las empresas evitar grandes inversiones iniciales y pagar solo por los recursos que realmente utilizan.", example: "Pagar por una máquina virtual solo por las horas que está encendida, o por el almacenamiento solo por los gigabytes que se están utilizando." },
+            { term: "CAPEX (Gasto de Capital)", definition: "Fondos utilizados por una empresa para adquirir, mejorar y mantener activos físicos como propiedades, edificios, tecnología o equipos.", explanation: "En el modelo on-premise, la compra de servidores es un gasto CAPEX.", example: "Comprar un nuevo rack de servidores por 50.000 dólares." },
+            { term: "OPEX (Gasto Operativo)", definition: "Los gastos continuos en los que incurre una empresa para llevar a cabo sus operaciones comerciales normales.", explanation: "El modelo de la nube transforma el gasto de TI de CAPEX a OPEX, ya que se paga una factura mensual por los servicios consumidos en lugar de comprar hardware.", example: "Pagar una factura mensual de 2.000 dólares a un proveedor de nube por el uso de sus servicios." },
+            { term: "Costo Total de Propiedad (TCO)", definition: "Una estimación financiera destinada a ayudar a los compradores y propietarios a determinar los costos directos e indirectos de un producto o sistema.", explanation: "Al comparar la nube con on-premise, el TCO incluye no solo el costo del hardware, sino también los costos de energía, refrigeración, espacio físico y personal de mantenimiento.", example: "Una empresa utiliza una calculadora de TCO para descubrir que, aunque el costo mensual de la nube parece alto, es más barato que mantener su propio centro de datos cuando se incluyen todos los costos ocultos." }
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('glossaryContainer');
+            const searchInput = document.getElementById('searchInput');
+
+            // Sort data alphabetically
+            glossaryData.sort((a, b) => a.term.localeCompare(b.term));
+            
+            // Generate HTML for each term
+            const renderGlossary = (terms) => {
+                container.innerHTML = terms.map(item => `
+                    <div class="term-card bg-white rounded-lg overflow-hidden">
+                        <div class="term-header p-4 flex justify-between items-center">
+                            <h3 class="text-xl font-semibold text-aws-link-blue">${item.term}</h3>
+                            <svg class="chevron w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        </div>
+                        <div class="term-content px-4">
+                            <p class="mb-3"><strong>Definición:</strong> ${item.definition}</p>
+                            <p class="mb-3"><strong>Explicación:</strong> ${item.explanation}</p>
+                            <p class="text-sm bg-gray-100 p-3 rounded-md"><strong>Ejemplo:</strong> ${item.example}</p>
+                        </div>
+                    </div>
+                `).join('');
+            };
+
+            renderGlossary(glossaryData);
+
+            // Add click listener for collapsible effect
+            container.addEventListener('click', (e) => {
+                const header = e.target.closest('.term-header');
+                if (header) {
+                    const content = header.nextElementSibling;
+                    const chevron = header.querySelector('.chevron');
+                    content.classList.toggle('open');
+                    chevron.classList.toggle('rotated');
+                }
+            });
+
+            // Add listener for search input
+            searchInput.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                const filteredData = glossaryData.filter(item => 
+                    item.term.toLowerCase().includes(searchTerm) || 
+                    item.definition.toLowerCase().includes(searchTerm) ||
+                    item.explanation.toLowerCase().includes(searchTerm)
+                );
+                renderGlossary(filteredData);
+            });
+        });
+    </script>
+</body>
+</html>

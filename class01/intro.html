@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introducción a la Nube ☁️</title>
+    
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Custom styles to match Google's visual style */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f8f9fa;
+            color: #3c4043;
+        }
+
+        /* Google-style colors */
+        .g-blue { color: #4285F4; }
+        .g-red { color: #DB4437; }
+        .g-yellow { color: #F4B400; }
+        .g-green { color: #0F9D58; }
+
+        .g-bg-blue { background-color: #4285F4; }
+        .g-bg-red { background-color: #DB4437; }
+        .g-bg-yellow { background-color: #F4B400; }
+        .g-bg-green { background-color: #0F9D58; }
+        
+        h1, h2, h3 {
+            font-family: 'Roboto', sans-serif;
+            font-weight: 500;
+        }
+
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            perspective: 1000px; /* Needed for the 3D flip effect */
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+        }
+
+        .card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden; /* Safari */
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header Section -->
+    <header class="bg-white border-b border-gray-200">
+        <div class="max-w-5xl mx-auto py-8 px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold tracking-tight text-gray-800">
+                <span>Un Vistazo a la </span><span class="g-blue">N</span><span class="g-red">u</span><span class="g-yellow">b</span><span class="g-green">e</span><span> ☁️</span>
+            </h1>
+            <p class="mt-4 text-lg text-gray-500">Una guía interactiva para entender su poder y potencial.</p>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+
+        <!-- Section: What is the Cloud? -->
+        <section id="intro" class="mb-16">
+            <div class="bg-white p-8 rounded-lg shadow-sm border border-gray-200">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">¿Qué es la Nube?</h2>
+                <p class="text-lg text-gray-600 leading-relaxed">
+                    La "nube" no es un lugar físico en el cielo, sino una <strong class="font-medium text-blue-600">red global de servidores remotos</strong> que funcionan como un único ecosistema. En lugar de almacenar datos o ejecutar programas en tu dispositivo, la nube te permite acceder a ellos a través de internet. Es como tener un supercomputador universal disponible desde cualquier lugar y en cualquier momento, pagando solo por los recursos que utilizas.
+                </p>
+            </div>
+        </section>
+
+        <!-- Section: History and Evolution -->
+        <section id="history" class="mb-16">
+            <h2 class="text-3xl font-bold text-gray-800 text-center mb-10">Historia y Evolución</h2>
+            <div class="relative">
+                <!-- The vertical line -->
+                <div class="absolute left-1/2 -translate-x-1/2 h-full w-0.5 bg-gray-200" aria-hidden="true"></div>
+                
+                <!-- Timeline items -->
+                <div class="space-y-12">
+                    <!-- Item 1: Mainframes -->
+                    <div class="flex items-center w-full">
+                        <div class="w-1/2 flex justify-end">
+                            <div class="w-full max-w-sm bg-white p-6 rounded-lg shadow-sm border border-gray-200 text-right">
+                                <h3 class="text-xl font-semibold g-blue">Años 60: Mainframes</h3>
+                                <p class="text-gray-600 mt-2">Los primeros conceptos de computación compartida. Grandes computadoras centrales eran accedidas por múltiples usuarios a través de terminales.</p>
+                            </div>
+                        </div>
+                        <div class="w-12 h-12 g-bg-blue rounded-full flex items-center justify-center text-white font-bold z-10 mx-4 shadow-lg">1</div>
+                        <div class="w-1/2"></div>
+                    </div>
+                    <!-- Item 2: SaaS -->
+                    <div class="flex items-center w-full">
+                        <div class="w-1/2"></div>
+                        <div class="w-12 h-12 g-bg-red rounded-full flex items-center justify-center text-white font-bold z-10 mx-4 shadow-lg">2</div>
+                        <div class="w-1/2 flex justify-start">
+                           <div class="w-full max-w-sm bg-white p-6 rounded-lg shadow-sm border border-gray-200 text-left">
+                                <h3 class="text-xl font-semibold g-red">1999: Nace el SaaS</h3>
+                                <p class="text-gray-600 mt-2">Salesforce.com populariza el modelo de "Software como Servicio" (SaaS), entregando aplicaciones de negocio a través de internet.</p>
+                            </div>
+                        </div>
+                    </div>
+                     <!-- Item 3: AWS -->
+                    <div class="flex items-center w-full">
+                        <div class="w-1/2 flex justify-end">
+                           <div class="w-full max-w-sm bg-white p-6 rounded-lg shadow-sm border border-gray-200 text-right">
+                                <h3 class="text-xl font-semibold g-yellow">2006: La Nube Moderna</h3>
+                                <p class="text-gray-600 mt-2">Amazon Web Services (AWS) lanza EC2, permitiendo a cualquiera alquilar poder de cómputo. Nace la "Infraestructura como Servicio" (IaaS).</p>
+                            </div>
+                        </div>
+                        <div class="w-12 h-12 g-bg-yellow rounded-full flex items-center justify-center text-white font-bold z-10 mx-4 shadow-lg">3</div>
+                        <div class="w-1/2"></div>
+                    </div>
+                    <!-- Item 4: Expansion -->
+                     <div class="flex items-center w-full">
+                        <div class="w-1/2"></div>
+                        <div class="w-12 h-12 g-bg-green rounded-full flex items-center justify-center text-white font-bold z-10 mx-4 shadow-lg">4</div>
+                        <div class="w-1/2 flex justify-start">
+                           <div class="w-full max-w-sm bg-white p-6 rounded-lg shadow-sm border border-gray-200 text-left">
+                                <h3 class="text-xl font-semibold g-green">2008 en adelante</h3>
+                                <p class="text-gray-600 mt-2">Google y Microsoft lanzan sus plataformas. La competencia acelera la innovación en IA, Big Data y computación sin servidor (serverless).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: 10 Value Examples -->
+        <section id="value-examples">
+            <h2 class="text-3xl font-bold text-gray-800 text-center mb-4">10 Ejemplos de Generación de Valor</h2>
+            <p class="text-center text-gray-500 mb-10">Haz clic en cada tarjeta para descubrir más.</p>
+            <div id="cards-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Las tarjetas se generarán dinámicamente con JavaScript -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white mt-12 border-t">
+        <div class="max-w-5xl mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center text-gray-500">
+            <p>&copy; 2024 Creado con la ayuda de la IA de Google.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Data for the interactive cards
+            const valueExamples = [
+                { icon: '🎬', title: 'Streaming de Entretenimiento', description: 'Netflix y Spotify usan la nube para transmitir gigabytes de datos a millones de usuarios simultáneamente sin interrupciones.', color: 'g-bg-red' },
+                { icon: '👥', title: 'Trabajo Colaborativo', description: 'Google Docs permite que equipos editen documentos en tiempo real desde cualquier lugar del mundo, sincronizando cambios al instante.', color: 'g-bg-blue' },
+                { icon: '💾', title: 'Almacenamiento Universal', description: 'Con Dropbox o iCloud, tus archivos están seguros y accesibles desde cualquier dispositivo, liberando espacio local.', color: 'g-bg-yellow' },
+                { icon: '📊', title: 'Análisis de Big Data', description: 'Empresas analizan enormes volúmenes de datos en la nube para predecir tendencias y tomar mejores decisiones sin supercomputadoras propias.', color: 'g-bg-green' },
+                { icon: '🚀', title: 'Desarrollo Ágil de Software', description: 'Los desarrolladores crean, prueban y lanzan apps más rápido, desplegando servidores en minutos en lugar de semanas.', color: 'g-bg-blue' },
+                { icon: '🎮', title: 'Videojuegos en la Nube', description: 'Xbox Cloud Gaming ejecuta juegos en servidores potentes y te los transmite, permitiéndote jugar títulos AAA en tu celular.', color: 'g-bg-green' },
+                { icon: '🛒', title: 'Comercio Electrónico Escalable', description: 'Tiendas online como Shopify manejan picos masivos de tráfico en Black Friday sin caerse, escalando recursos automáticamente.', color: 'g-bg-yellow' },
+                { icon: '🤖', title: 'IA y Machine Learning Accesible', description: 'Pequeñas empresas usan servicios de IA en la nube para chatbots o reconocimiento de imágenes, pagando solo por el uso.', color: 'g-bg-red' },
+                { icon: '🔥', title: 'Recuperación ante Desastres', description: 'Las empresas respaldan sus sistemas en la nube para seguir operando en minutos si su oficina sufre un desastre.', color: 'g-bg-blue' },
+                { icon: '🎓', title: 'Educación a Distancia', description: 'Plataformas como Coursera usan la nube para ofrecer cursos a millones de estudiantes, gestionando videos y evaluaciones.', color: 'g-bg-green' }
+            ];
+
+            const cardsContainer = document.getElementById('cards-container');
+
+            // Function to create and add cards to the HTML
+            valueExamples.forEach(example => {
+                const card = document.createElement('div');
+                card.className = 'card cursor-pointer h-56 rounded-lg';
+
+                card.innerHTML = `
+                    <div class="card-inner w-full h-full">
+                        <!-- Card Front -->
+                        <div class="card-front w-full h-full bg-white border border-gray-200 rounded-lg flex flex-col items-center justify-center p-4 shadow-sm">
+                            <div class="text-5xl mb-3">${example.icon}</div>
+                            <h3 class="text-xl font-semibold text-center text-gray-700">${example.title}</h3>
+                        </div>
+                        <!-- Card Back -->
+                        <div class="card-back w-full h-full ${example.color} rounded-lg flex items-center justify-center p-5 shadow-lg">
+                            <p class="text-white text-center text-md font-medium">${example.description}</p>
+                        </div>
+                    </div>
+                `;
+                
+                // Add click event to flip the card
+                card.addEventListener('click', () => {
+                    card.classList.toggle('flipped');
+                });
+
+                cardsContainer.appendChild(card);
+            });
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reto de Codificación: Monitor de Salud de Servicios Cloud</title>
+    <style>
+        :root {
+            --aws-dark-blue: #131A22;
+            --aws-medium-blue: #232F3E;
+            --aws-light-blue: #3E4D5E;
+            --aws-orange: #FF9900;
+            --aws-font-color: #FFFFFF;
+            --aws-light-gray: #EAEDED;
+            --aws-border-color: #4A5B6F;
+            --success-color: #2ECC71;
+            --info-color: #3498DB;
+            --font-family: 'Roboto', 'Amazon Ember', 'Helvetica', 'Arial', sans-serif;
+            --border-radius: 4px;
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--aws-medium-blue);
+            color: var(--aws-font-color);
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: var(--aws-dark-blue);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--aws-border-color);
+        }
+        header {
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--aws-orange);
+            margin-bottom: 30px;
+        }
+        header h1 {
+            color: var(--aws-orange);
+            margin: 0 0 10px 0;
+        }
+        header p {
+            font-size: 1.1em;
+            color: var(--aws-light-gray);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .section {
+            background-color: var(--aws-medium-blue);
+            border: 1px solid var(--aws-border-color);
+            border-radius: var(--border-radius);
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+        .section-header {
+            background-color: var(--aws-light-blue);
+            padding: 15px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .section-header h2 {
+            margin: 0;
+            font-size: 1.3em;
+            color: var(--aws-font-color);
+        }
+        .section-header .toggle-icon {
+            font-size: 1.5em;
+            transition: transform 0.3s;
+        }
+        .section-header.active .toggle-icon {
+            transform: rotate(180deg);
+        }
+        .section-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+            padding: 0 20px;
+        }
+        .section-content p, .section-content li {
+            color: var(--aws-light-gray);
+            line-height: 1.7;
+        }
+        pre {
+            background: #0d1117;
+            color: #c9d1d9;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            border: 1px solid var(--aws-border-color);
+        }
+        code { font-family: 'Courier New', Courier, monospace; }
+        .command { color: var(--aws-orange); font-weight: bold; }
+        .filename { color: var(--info-color); font-style: italic; }
+        .note {
+            background-color: rgba(255, 153, 0, 0.1);
+            border-left: 4px solid var(--aws-orange);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: var(--border-radius);
+        }
+        ul {
+            list-style: none;
+            padding-left: 20px;
+        }
+        ul li {
+            position: relative;
+            padding-left: 25px;
+            margin-bottom: 10px;
+        }
+        ul li::before {
+            content: '✓';
+            color: var(--success-color);
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Reto de Codificación (45 Minutos)</h1>
+            <p><strong>Misión:</strong> Crear un "Monitor de Salud de Servicios Cloud" con Python.</p>
+        </header>
+
+        <div class="section" id="setup-section">
+            <div class="section-header">
+                <h2>Parte 1: Configuración del Entorno en Windows</h2>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="section-content">
+                <p>Antes de codificar, asegúrate de tener un entorno de desarrollo limpio. Sigue estos pasos:</p>
+                
+                <h4>Paso 1: Instalar Python</h4>
+                <p>Si no tienes Python, descárgalo desde el sitio oficial. Te recomendamos la versión 3.10 o superior.</p>
+                <ol>
+                    <li>Ve a <a href="https://www.python.org/downloads/windows/" target="_blank" style="color: var(--aws-orange);">python.org</a>.</li>
+                    <li>Descarga el instalador de Windows.</li>
+                    <li>Ejecuta el instalador. <strong>¡MUY IMPORTANTE!</strong> Asegúrate de marcar la casilla que dice <strong class="command">"Add Python to PATH"</strong> antes de hacer clic en "Install Now".</li>
+                </ol>
+                <div class="note"><strong>¿Por qué "Add to PATH"?</strong> Esto te permite ejecutar el comando `python` desde cualquier terminal, sin tener que escribir la ruta completa al programa.</div>
+
+                <h4>Paso 2: Verificar la Instalación</h4>
+                <p>Abre una nueva terminal (CMD o PowerShell) y ejecuta los siguientes comandos para confirmar que todo se instaló correctamente:</p>
+                <pre><code>python --version
+pip --version</code></pre>
+                <p>Deberías ver las versiones de Python y pip (el gestor de paquetes de Python) impresas en la pantalla.</p>
+
+                <h4>Paso 3: Crear un Entorno Virtual</h4>
+                <p>Es una buena práctica aislar las dependencias de cada proyecto. Vamos a crear una carpeta para nuestro reto y dentro un entorno virtual.</p>
+                <pre><code class="language-bash"># Crea una carpeta para el proyecto y entra en ella
+mkdir python-health-checker
+cd python-health-checker
+
+# Crea el entorno virtual (venv es el nombre estándar)
+python -m venv venv</code></pre>
+                <p>Verás una nueva carpeta llamada <span class="filename">venv</span> en tu directorio.</p>
+
+                <h4>Paso 4: Activar el Entorno Virtual</h4>
+                <p>Para usar el entorno, necesitas activarlo. El prompt de tu terminal cambiará para mostrar `(venv)` al principio.</p>
+                <pre><code class="language-powershell">.\venv\Scripts\activate</code></pre>
+                <div class="note">Cada vez que abras una nueva terminal para trabajar en este proyecto, deberás ejecutar este comando de activación.</div>
+
+                <h4>Paso 5: Instalar Librerías Necesarias</h4>
+                <p>Nuestro script necesitará hacer peticiones a URLs. Usaremos la librería `requests`, que es el estándar de oro en Python para esto.</p>
+                <pre><code class="language-bash">pip install requests</code></pre>
+                <p>¡Listo! Tu entorno está preparado para el reto.</p>
+            </div>
+        </div>
+
+        <div class="section" id="challenge-section">
+            <div class="section-header">
+                <h2>Parte 2: El Reto de Codificación</h2>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="section-content">
+                <h4>Contexto del Problema</h4>
+                <p>Eres un Ingeniero Cloud en una startup. Se te ha pedido crear un script simple que verifique periódicamente si los servicios web de la empresa y sus APIs externas están funcionando correctamente. Esto ayudará al equipo a detectar fallos rápidamente.</p>
+                
+                <h4>Requisitos del Script</h4>
+                <ul>
+                    <li>El script debe leer una lista de URLs desde un archivo de texto llamado <span class="filename">services.txt</span>.</li>
+                    <li>Para cada URL, debe realizar una petición HTTP GET.</li>
+                    <li>Debe comprobar el código de estado de la respuesta HTTP. Si el código es 200 (OK), el servicio está "UP". Cualquier otro código o un error de conexión significa que está "DOWN".</li>
+                    <li>Debe imprimir un reporte claro en la consola, indicando el estado de cada servicio.</li>
+                    <li>Debe manejar errores de conexión gracefully (por ejemplo, si una URL no existe o el servidor no responde).</li>
+                </ul>
+
+                <h4>Paso A: Crear los Archivos</h4>
+                <p>En tu carpeta <span class="filename">python-health-checker</span>, crea dos archivos:</p>
+                <ol>
+                    <li>Un archivo de texto llamado <span class="filename">services.txt</span>.</li>
+                    <li>Un script de Python llamado <span class="filename">health_checker.py</span>.</li>
+                </ol>
+                <p>Copia y pega el siguiente contenido en tu archivo <span class="filename">services.txt</span>. Usaremos APIs públicas para la prueba:</p>
+                <pre><code>https://api.github.com
+https://jsonplaceholder.typicode.com/todos/1
+https://httpstat.us/503
+https://esto-no-existe-12345.com
+https://httpstat.us/200</code></pre>
+
+                <h4>Paso B: Escribir el Código (¡Aquí está el reto!)</h4>
+                <p>Abre <span class="filename">health_checker.py</span> en tu editor de código. Aquí tienes una estructura sugerida y algunas pistas:</p>
+                <pre><code class="language-python"># 1. Importa las librerías necesarias
+import requests
+import time # (Opcional, para añadir pausas)
+
+# 2. Define una función para leer las URLs del archivo
+def get_services(file_path):
+    # Pista: abre el archivo, lee las líneas y devuélvelas en una lista.
+    # No olvides usar .strip() para eliminar saltos de línea.
+    pass
+
+# 3. Define una función para comprobar el estado de una URL
+def check_service(url):
+    # Pista: Usa un bloque try...except para manejar errores de conexión.
+    # Dentro del try, usa requests.get(url, timeout=5).
+    # Comprueba response.status_code.
+    # Devuelve "UP" o "DOWN".
+    pass
+
+# 4. Bloque principal para orquestar el script
+if __name__ == "__main__":
+    print("Iniciando chequeo de salud de servicios...")
+    # Llama a get_services para obtener la lista de URLs.
+    # Itera sobre la lista con un bucle for.
+    # En cada iteración, llama a check_service.
+    # Imprime el resultado de forma clara. ej: "Servicio https://... está [UP]"
+    print("Chequeo completado.")
+</code></pre>
+
+                <h4>Paso C: Ejecutar y Validar</h4>
+                <p>Una vez que hayas escrito tu código, guárdalo y ejecútalo desde tu terminal (asegúrate de que tu entorno virtual esté activado):</p>
+                <pre><code>python health_checker.py</code></pre>
+                <p>La salida esperada debería ser similar a esto:</p>
+                <pre><code>Iniciando chequeo de salud de servicios...
+[✓] Servicio https://api.github.com está UP
+[✓] Servicio https://jsonplaceholder.typicode.com/todos/1 está UP
+[✗] Servicio https://httpstat.us/503 está DOWN
+[✗] Servicio https://esto-no-existe-12345.com está DOWN
+[✓] Servicio https://httpstat.us/200 está UP
+Chequeo completado.</code></pre>
+            </div>
+        </div>
+
+        <div class="section" id="solution-section">
+            <div class="section-header">
+                <h2>Solución del Reto (Solo si te rindes o para verificar)</h2>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="section-content">
+                <p>Aquí tienes una posible solución al problema. Compara tu código con este para ver diferentes enfoques.</p>
+                <pre><code class="language-python">
+import requests
+import time
+
+def get_services(file_path):
+    """Lee un archivo de texto y devuelve una lista de URLs."""
+    try:
+        with open(file_path, 'r') as file:
+            # Usamos una list comprehension para leer y limpiar las líneas
+            services = [line.strip() for line in file if line.strip()]
+        return services
+    except FileNotFoundError:
+        print(f"Error: El archivo {file_path} no fue encontrado.")
+        return []
+
+def check_service(url):
+    """
+    Realiza una petición a una URL y devuelve su estado.
+    Devuelve una tupla (status_string, success_boolean).
+    """
+    try:
+        # Hacemos la petición con un timeout de 5 segundos
+        response = requests.get(url, timeout=5)
+        
+        # Verificamos si el código de estado es 200 (OK)
+        if response.status_code == 200:
+            return "UP", True
+        else:
+            # Cualquier otro código de estado se considera DOWN
+            return f"DOWN (Status: {response.status_code})", False
+            
+    except requests.exceptions.RequestException as e:
+        # Capturamos cualquier error de conexión (DNS, timeout, etc.)
+        return "DOWN (Error de conexión)", False
+
+if __name__ == "__main__":
+    services_file = 'services.txt'
+    
+    print("Iniciando chequeo de salud de servicios...")
+    print("-" * 40)
+    
+    services_to_check = get_services(services_file)
+    
+    if not services_to_check:
+        print("No hay servicios que chequear. Finalizando.")
+    else:
+        for service_url in services_to_check:
+            status, success = check_service(service_url)
+            
+            icon = "[✓]" if success else "[✗]"
+            
+            # Imprimimos el resultado con formato
+            print(f"{icon} Servicio {service_url} está {status}")
+            
+            # Pequeña pausa para no saturar los servicios
+            time.sleep(0.5)
+
+    print("-" * 40)
+    print("Chequeo completado.")
+</code></pre>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.querySelectorAll('.section-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const content = header.nextElementSibling;
+                header.classList.toggle('active');
+
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                } else {
+                    // Se añade un poco de padding al scrollHeight para mejor transición visual
+                    content.style.maxHeight = (content.scrollHeight + 40) + "px";
+                }
+            });
+        });
+
+        // Auto-expandir la primera sección al cargar la página
+        window.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelector('.section-header').click();
+        });
+    </script>
+</body>
+</html>

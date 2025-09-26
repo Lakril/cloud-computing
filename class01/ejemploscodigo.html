@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía Interactiva: Fundamentos para Infraestructura en la Nube</title>
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #f8f9fa;
+            --dark-color: #2c3e50;
+            --light-color: #ecf0f1;
+            --code-bg: #1e1e1e;
+            --code-color: #d4d4d4;
+            --border-radius: 8px;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--light-color);
+            color: var(--dark-color);
+        }
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            overflow: hidden;
+            padding: 0 20px;
+        }
+        header {
+            background: var(--dark-color);
+            color: #fff;
+            padding: 1.5rem 0;
+            text-align: center;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+        }
+        header h1 { margin: 0; }
+        .tabs {
+            display: flex;
+            background: #fff;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            flex-wrap: wrap;
+        }
+        .tab-button {
+            padding: 15px 20px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 16px;
+            font-weight: bold;
+            flex-grow: 1;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .tab-button.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        .tab-content {
+            display: none;
+            padding: 20px;
+            background: #fff;
+            margin-top: -1px;
+            border: 1px solid #ddd;
+            border-radius: 0 0 var(--border-radius) var(--border-radius);
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .accordion {
+            background-color: var(--secondary-color);
+            color: var(--dark-color);
+            cursor: pointer;
+            padding: 18px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 15px;
+            font-weight: bold;
+            transition: 0.4s;
+            margin-top: 10px;
+            border-radius: var(--border-radius);
+            border-left: 5px solid var(--primary-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .accordion:after {
+            content: '\002B'; /* Plus sign */
+            font-size: 20px;
+            color: var(--primary-color);
+        }
+        .accordion.active:after {
+            content: "\2212"; /* Minus sign */
+        }
+        .accordion:hover {
+            background-color: #e2e6ea;
+        }
+        .panel {
+            padding: 0 18px;
+            background-color: white;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            border-bottom: 1px solid #ddd;
+        }
+        .panel p { margin-top: 15px; }
+        pre {
+            background: var(--code-bg);
+            color: var(--code-color);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        code { font-family: "Fira Code", "Courier New", monospace; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        tr:nth-child(even) { background-color: var(--secondary-color); }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Guía Interactiva de Fundamentos</h1>
+            <p>Bootcamp de Infraestructura en la Nube</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-button active" onclick="openTab(event, 'Bash')">⚙️ Bash</button>
+            <button class="tab-button" onclick="openTab(event, 'Python')">🐍 Python</button>
+            <button class="tab-button" onclick="openTab(event, 'Java')">☕ Java</button>
+            <button class="tab-button" onclick="openTab(event, 'Git')">🌿 Git</button>
+            <button class="tab-button" onclick="openTab(event, 'Comparativa')">📊 Comparativa</button>
+        </div>
+
+        <!-- BASH CONTENT -->
+        <div id="Bash" class="tab-content active">
+            <h2>Bash Scripting para SysAdmins</h2>
+            <p>La navaja suiza para la automatización en servidores Linux, esencial para tareas de DevOps e infraestructura.</p>
+            
+            <button class="accordion">1. Hola Mundo</button>
+            <div class="panel"><p>El comando más básico para imprimir texto en la terminal.</p><pre><code>echo "Hola, Bootcamp!"</code></pre></div>
+            
+            <button class="accordion">2. Variables</button>
+            <div class="panel"><p>Almacena datos en variables. Recuerda no usar espacios alrededor del <code>=</code>.</p><pre><code># Asignar (sin espacios)
+REGION="us-east-1"
+# Usar (con $)
+echo "Desplegando en la región: $REGION"</code></pre></div>
+            
+            <button class="accordion">3. Listar archivos (ls)</button>
+            <div class="panel"><p>Uno de los comandos más usados. <code>-l</code> para formato largo, <code>-a</code> para mostrar ocultos, <code>-h</code> para tamaños legibles.</p><pre><code># Listar con detalles y tamaños legibles
+ls -lah
+# Listar ordenado por tamaño (más grande al final)
+ls -lSrh</code></pre></div>
+
+            <button class="accordion">4. Leer la entrada del usuario</button>
+            <div class="panel"><p>Permite hacer scripts interactivos que solicitan información al usuario.</p><pre><code>echo "¿Cuál es tu nombre?"
+read NOMBRE
+echo "Hola, $NOMBRE"</code></pre></div>
+
+            <button class="accordion">5. Condicional 'if'</button>
+            <div class="panel"><p>Ejecuta bloques de código basados en una condición. <code>-f</code> comprueba si existe un archivo.</p><pre><code># Comprobar si un archivo existe
+if [ -f "config.yaml" ]; then
+    echo "El archivo de configuración existe."
+else
+    echo "¡Error! No se encontró config.yaml."
+fi</code></pre></div>
+
+            <button class="accordion">6. Bucle 'for'</button>
+            <div class="panel"><p>Itera sobre una lista de elementos (servidores, archivos, etc.) para realizar una acción en cada uno.</p><pre><code># Iterar sobre una lista de servidores
+for server in web-01 db-01 cache-01; do
+    echo "Reiniciando $server..."
+    # ssh user@$server 'sudo reboot'
+done</code></pre></div>
+
+            <button class="accordion">7. Bucle 'while' para leer un archivo</button>
+            <div class="panel"><p>Procesa un archivo línea por línea, útil para leer listas de IPs, URLs, etc.</p><pre><code>while IFS= read -r line; do
+    echo "Procesando URL: $line"
+done < urls.txt</code></pre></div>
+            
+            <button class="accordion">8. Crear y cambiar de directorio</button>
+            <div class="panel"><p><code>mkdir -p</code> crea directorios anidados si no existen, evitando errores.</p><pre><code># Crear un directorio para logs
+mkdir -p /var/log/mi-app
+# Moverse a ese directorio
+cd /var/log/mi-app</code></pre></div>
+
+            <button class="accordion">9. Escribir a un archivo</button>
+            <div class="panel"><p><code>></code> sobrescribe el contenido del archivo, mientras que <code>>></code> añade al final.</p><pre><code># Sobrescribir archivo
+echo "Servidor OK" > status.txt
+# Añadir al final del archivo
+echo "Última revisión: $(date)" >> status.txt</code></pre></div>
+
+            <button class="accordion">10. Buscar archivos con 'find'</button>
+            <div class="panel"><p>Potente comando para localizar archivos basados en nombre, tamaño, fecha, etc.</p><pre><code># Encontrar todos los archivos .log modificados en las últimas 24 horas
+find . -name "*.log" -mtime -1</code></pre></div>
+
+            <button class="accordion">11. Buscar texto en archivos con 'grep'</button>
+            <div class="panel"><p>Filtra líneas que contienen un patrón. <code>-i</code> para ignorar mayúsculas, <code>-r</code> para buscar recursivamente.</p><pre><code># Buscar la palabra 'ERROR' en todos los archivos de un directorio
+grep -ir "ERROR" /var/log/</code></pre></div>
+            
+            <button class="accordion">12. Usar 'curl' para probar un endpoint</button>
+            <div class="panel"><p>Herramienta para transferir datos con URLs. Esencial para probar APIs.</p><pre><code># Obtener el cuerpo de una respuesta HTTP y mostrar el código de estado
+curl -s -o /dev/null -w "%{http_code}" https://api.github.com</code></pre></div>
+
+            <button class="accordion">13. Encadenar comandos (pipes)</button>
+            <div class="panel"><p>El pipe <code>|</code> pasa la salida de un comando como entrada al siguiente. Fundamental en la filosofía de Unix.</p><pre><code># Contar cuántos procesos de nginx están corriendo
+ps aux | grep nginx | grep -v grep | wc -l</code></pre></div>
+            
+            <button class="accordion">14. Ver uso de disco</button>
+            <div class="panel"><p><code>df</code> muestra el espacio en disco de los sistemas de archivos. <code>du</code> muestra el uso de disco de archivos y directorios.</p><pre><code># Mostrar uso de disco en formato legible
+df -h
+# Mostrar el tamaño de las carpetas en el directorio actual
+du -sh *</code></pre></div>
+            
+            <button class="accordion">15. Cambiar permisos de un archivo</button>
+            <div class="panel"><p><code>chmod</code> modifica los permisos de lectura (r), escritura (w) y ejecución (x).</p><pre><code># Hacer un script ejecutable para el propietario
+chmod u+x deploy.sh
+# Asignar permisos 755 (rwxr-xr-x)
+chmod 755 deploy.sh</code></pre></div>
+            
+            <button class="accordion">16. Ver los últimos logs</button>
+            <div class="panel"><p><code>tail -f</code> es increíblemente útil para monitorear logs en tiempo real.</p><pre><code># Ver las últimas 100 líneas y seguir viendo en tiempo real
+tail -n 100 -f /var/log/syslog</code></pre></div>
+
+            <button class="accordion">17. Funciones</button>
+            <div class="panel"><p>Permiten agrupar comandos para reutilizarlos, haciendo los scripts más modulares.</p><pre><code>function check_status() {
+    echo "Revisando estado de $1..."
+    # Aquí iría la lógica de revisión
+}
+check_status "web-server"</code></pre></div>
+
+            <button class="accordion">18. Argumentos de script</button>
+            <div class="panel"><p>Pasa parámetros a tus scripts para hacerlos más flexibles. <code>$1</code> es el primer argumento, <code>$2</code> el segundo, etc.</p><pre><code># Dentro de un script llamado deploy.sh
+# Uso: ./deploy.sh production
+if [ -z "$1" ]; then
+    echo "Error: Debes especificar un entorno (staging/production)."
+    exit 1
+fi
+echo "Desplegando en el entorno: $1"</code></pre></div>
+
+            <button class="accordion">19. Extraer datos con 'awk'</button>
+            <div class="panel"><p>Una herramienta de procesamiento de texto muy potente para manipular datos en columnas.</p><pre><code># Obtener el uso de CPU (tercera columna) de los procesos
+ps aux | awk '{print "PID: " $2 ", CPU: " $3 "%"}'</code></pre></div>
+
+            <button class="accordion">20. Crear un archivo tar comprimido</button>
+            <div class="panel"><p>Empaqueta múltiples archivos en uno solo (<code>tar</code>) y lo comprime (<code>gzip</code>).</p><pre><code># Comprimir el directorio 'logs' en un archivo
+tar -czvf logs-backup-$(date +%F).tar.gz logs/</code></pre></div>
+
+        </div>
+
+        <!-- PYTHON CONTENT -->
+        <div id="Python" class="tab-content">
+            <h2>Python para Automatización en la Nube</h2>
+            <p>Ideal para interactuar con APIs de proveedores cloud (usando SDKs), procesar datos y crear scripts complejos.</p>
+
+            <button class="accordion">1. Hola Mundo</button>
+            <div class="panel"><p>La función <code>print()</code> es la forma estándar de mostrar salida en la consola.</p><pre><code>print("Hola, Bootcamp de Python!")</code></pre></div>
+            
+            <button class="accordion">2. Variables y Tipos de Datos</button>
+            <div class="panel"><p>Python tiene tipado dinámico, no necesitas declarar el tipo de variable.</p><pre><code>instance_type = "t2.micro"  # String
+instance_count = 5          # Integer
+is_active = True            # Boolean
+print(f"Creando {instance_count} instancias del tipo {instance_type}")</code></pre></div>
+
+            <button class="accordion">3. Listas (Arrays)</button>
+            <div class="panel"><p>Colecciones ordenadas y mutables de elementos.</p><pre><code># Lista de zonas de disponibilidad
+zones = ["us-east-1a", "us-east-1b", "us-east-1c"]
+zones.append("us-east-1d") # Añadir un elemento
+print(zones[0])  # Imprime el primer elemento</code></pre></div>
+            
+            <button class="accordion">4. Diccionarios (Objetos/Mapas)</button>
+            <div class="panel"><p>Colecciones de pares clave-valor, muy útiles para representar datos como JSON.</p><pre><code># Configuración de una instancia
+config = {
+    "ami": "ami-0abcdef1234567890",
+    "type": "t3.medium",
+    "tags": {"Name": "web-server-01"}
+}
+print(config["tags"]["Name"])</code></pre></div>
+
+            <button class="accordion">5. Condicional 'if'</button>
+            <div class="panel"><p>Estructura de control para ejecutar código basado en si una condición es verdadera o falsa.</p><pre><code>environment = "prod"
+if environment == "prod":
+    print("¡CUIDADO! Estás en producción.")
+elif environment == "staging":
+    print("Operando en el entorno de Staging.")
+else:
+    print(f"Operando en el entorno de {environment}.")</code></pre></div>
+
+            <button class="accordion">6. Bucle 'for'</button>
+            <div class="panel"><p>Itera sobre cualquier secuencia (lista, string, etc.).</p><pre><code># Iterar sobre una lista de buckets S3
+s3_buckets = ["bucket-logs", "bucket-data", "bucket-web"]
+for bucket in s3_buckets:
+    print(f"Verificando permisos en {bucket}...")</code></pre></div>
+
+            <button class="accordion">7. Funciones</button>
+            <div class="panel"><p>Bloques de código reutilizables que realizan una tarea específica.</p><pre><code>def create_ec2_instance(instance_type="t2.micro", region="us-east-1"):
+    """Crea una instancia EC2 con el tipo y región especificados."""
+    print(f"Iniciando instancia de tipo {instance_type} en {region}...")
+    return "i-1234567890abcdef0"
+
+new_instance_id = create_ec2_instance("m5.large")
+print(f"Instancia creada con ID: {new_instance_id}")</code></pre></div>
+            
+            <button class="accordion">8. Leer un archivo de configuración</button>
+            <div class="panel"><p>El uso de <code>with open(...)</code> asegura que el archivo se cierre correctamente, incluso si ocurren errores.</p><pre><code>with open("config.txt", "r") as f:
+    for line in f:
+        # Ignorar líneas vacías o comentarios
+        if line.strip() and not line.startswith("#"):
+            print(f"Configuración leída: {line.strip()}")</code></pre></div>
+
+            <button class="accordion">9. Escribir a un archivo de log</button>
+            <div class="panel"><p>El modo <code>'a'</code> (append) añade contenido al final del archivo sin borrar lo existente.</p><pre><code>from datetime import datetime
+now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+with open("deploy.log", "a") as f:
+    f.write(f"[{now}] Despliegue completado con éxito.\\n")</code></pre></div>
+
+            <button class="accordion">10. Ejecutar comandos del sistema</button>
+            <div class="panel"><p>El módulo <code>subprocess</code> es más moderno y seguro que <code>os.system</code>.</p><pre><code>import subprocess
+# Ejecuta el comando y captura la salida
+result = subprocess.run(["ls", "-la"], capture_output=True, text=True)
+print(result.stdout)</code></pre></div>
+
+            <button class="accordion">11. Manejo de excepciones (Try-Except)</button>
+            <div class="panel"><p>Permite que tu script maneje errores de forma elegante sin detenerse abruptamente.</p><pre><code>try:
+    # Intenta conectarse a un servicio
+    db_connection = None # Simulación
+    if not db_connection:
+        raise ConnectionError("No se pudo conectar a la base de datos.")
+except ConnectionError as e:
+    print(f"Error de conexión: {e}")
+except Exception as e:
+    print(f"Ocurrió un error inesperado: {e}")</code></pre></div>
+
+            <button class="accordion">12. Trabajar con JSON</button>
+            <div class="panel"><p>El módulo <code>json</code> es parte de la librería estándar de Python para codificar y decodificar datos JSON.</p><pre><code>import json
+# De Python (dict) a string JSON
+data_dict = {"userId": 1, "status": "active"}
+json_string = json.dumps(data_dict, indent=4)
+print(json_string)
+
+# De string JSON a Python (dict)
+json_data = '{"id": 1, "title": "Test Title"}'
+data = json.loads(json_data)
+print(data['title'])</code></pre></div>
+
+            <button class="accordion">13. Hacer una petición a una API (con requests)</button>
+            <div class="panel"><p>La librería <code>requests</code> simplifica enormemente el trabajo con peticiones HTTP.</p><pre><code># Primero: pip install requests
+import requests
+try:
+    response = requests.get("https://api.github.com/users/google", timeout=5)
+    response.raise_for_status() # Lanza un error si la respuesta es 4xx o 5xx
+    print(response.json()["name"])
+except requests.exceptions.RequestException as e:
+    print(f"Error al llamar a la API: {e}")</code></pre></div>
+
+            <button class="accordion">14. Argumentos de línea de comandos</button>
+            <div class="panel"><p>El módulo <code>argparse</code> es la forma recomendada para crear CLIs robustas.</p><pre><code>import argparse
+parser = argparse.ArgumentParser(description="Despliega una aplicación.")
+parser.add_argument("environment", choices=['staging', 'prod'], help="El entorno a desplegar")
+args = parser.parse_args()
+print(f"Desplegando en: {args.environment}")</code></pre></div>
+
+            <button class="accordion">15. Trabajar con variables de entorno</button>
+            <div class="panel"><p>Una práctica segura para manejar configuraciones sensibles como API keys.</p><pre><code>import os
+api_key = os.getenv("MY_API_KEY")
+if not api_key:
+    print("Error: La variable de entorno MY_API_KEY no está definida.")
+else:
+    print("API Key encontrada.")</code></pre></div>
+
+            <button class="accordion">16. Listar archivos en un directorio</button>
+            <div class="panel"><p>El módulo <code>pathlib</code> ofrece una forma moderna y orientada a objetos para manejar rutas de archivos.</p><pre><code>from pathlib import Path
+for item in Path(".").glob("*.py"): # Busca solo archivos Python
+    print(item.name)</code></pre></div>
+            
+            <button class="accordion">17. Comprobar si un directorio existe y crearlo</button>
+            <div class="panel"><p><code>os.makedirs(..., exist_ok=True)</code> previene un error si el directorio ya existe.</p><pre><code>import os
+dir_path = "data/reports"
+os.makedirs(dir_path, exist_ok=True)
+print(f"Directorio '{dir_path}' asegurado.")</code></pre></div>
+            
+            <button class="accordion">18. Ejemplo con Boto3 (SDK de AWS)</button>
+            <div class="panel"><p>Boto3 es el SDK oficial de AWS para Python, permitiendo interactuar con servicios como S3, EC2, etc.</p><pre><code># Primero: pip install boto3
+import boto3
+s3 = boto3.client('s3')
+try:
+    response = s3.list_buckets()
+    print("Buckets de S3:")
+    for bucket in response['Buckets']:
+        print(f'  -> {bucket["Name"]}')
+except Exception as e:
+    print(f"Error al listar buckets: {e}")</code></pre></div>
+
+            <button class="accordion">19. Clases y Objetos</button>
+            <div class="panel"><p>La programación orientada a objetos ayuda a modelar entidades del mundo real, como una máquina virtual.</p><pre><code>class VirtualMachine:
+    def __init__(self, name, ip):
+        self.name = name
+        self.ip = ip
+        self.status = "stopped"
+    def start(self):
+        self.status = "running"
+        print(f"{self.name} ({self.ip}) ha sido iniciada.")
+    def stop(self):
+        self.status = "stopped"
+        print(f"{self.name} ({self.ip}) ha sido detenida.")
+
+vm1 = VirtualMachine("db-server", "10.0.1.5")
+vm1.start()</code></pre></div>
+
+            <button class="accordion">20. List Comprehensions</button>
+            <div class="panel"><p>Una forma "Pythónica" y concisa de crear listas basadas en otras listas.</p><pre><code># Obtener los cuadrados de los números pares del 0 al 9
+squares_of_evens = [x**2 for x in range(10) if x % 2 == 0]
+print(squares_of_evens) # Salida: [0, 4, 16, 36, 64]</code></pre></div>
+
+        </div>
+
+        <!-- JAVA CONTENT -->
+        <div id="Java" class="tab-content">
+            <h2>Java para Aplicaciones Cloud-Native</h2>
+            <p>Lenguaje robusto, de tipado estático y orientado a objetos, ideal para construir microservicios y aplicaciones a gran escala que se ejecutan en la nube.</p>
+
+            <button class="accordion">1. Hola Mundo</button>
+            <div class="panel"><p>La estructura básica de un programa en Java: una clase con un método <code>main</code>.</p><pre><code>public class Main {
+    public static void main(String[] args) {
+        System.out.println("Hola, Bootcamp de Java!");
+    }
+}
+// Compilar: javac Main.java
+// Ejecutar: java Main</code></pre></div>
+
+            <button class="accordion">2. Variables y Tipos Primitivos</button>
+            <div class="panel"><p>Java es de tipado estático, por lo que debes declarar el tipo de cada variable.</p><pre><code>String region = "us-west-2";
+int instanceCount = 10;
+double cpuUsage = 0.75;
+boolean isProduction = true;
+System.out.println("Desplegando " + instanceCount + " instancias en " + region);</code></pre></div>
+
+            <button class="accordion">3. Arrays</button>
+            <div class="panel"><p>Colecciones de tamaño fijo de elementos del mismo tipo.</p><pre><code>String[] availabilityZones = {"us-west-2a", "us-west-2b", "us-west-2c"};
+System.out.println("Primera zona: " + availabilityZones[0]);</code></pre></div>
+            
+            <button class="accordion">4. Condicional 'if-else'</button>
+            <div class="panel"><p>Permite ejecutar diferentes bloques de código según una condición.</p><pre><code>int httpStatus = 200;
+if (httpStatus >= 200 && httpStatus < 300) {
+    System.out.println("Petición exitosa.");
+} else {
+    System.out.println("Error en la petición: " + httpStatus);
+}</code></pre></div>
+            
+            <button class="accordion">5. Bucle 'for'</button>
+            <div class="panel"><p>El bucle 'for' clásico con inicializador, condición e incremento.</p><pre><code>for (int i = 1; i <= 5; i++) {
+    System.out.println("Creando contenedor " + i);
+}</code></pre></div>
+            
+            <button class="accordion">6. ArrayList y bucle 'for-each'</button>
+            <div class="panel"><p><code>ArrayList</code> es una lista de tamaño dinámico. El bucle 'for-each' es una forma más limpia de iterar sobre colecciones.</p><pre><code>import java.util.ArrayList;
+ArrayList<String> services = new ArrayList<>();
+services.add("API Gateway");
+services.add("Lambda");
+
+for (String service : services) {
+    System.out.println("Configurando " + service);
+}</code></pre></div>
+
+            <button class="accordion">7. Métodos (Funciones)</button>
+            <div class="panel"><p>Los métodos deben definir un tipo de retorno (o <code>void</code> si no devuelven nada).</p><pre><code>public class Deployer {
+    public static String deploy(String environment) {
+        System.out.println("Iniciando despliegue en " + environment);
+        return "deployment-id-123";
+    }
+    public static void main(String[] args) {
+        String id = deploy("staging");
+        System.out.println("Despliegue finalizado con ID: " + id);
+    }
+}</code></pre></div>
+            
+            <button class="accordion">8. Clases y Objetos</button>
+            <div class="panel"><p>La base de la programación orientada a objetos en Java.</p><pre><code>class Server {
+    private String hostname;
+    public Server(String hostname) { this.hostname = hostname; }
+    public void reboot() { System.out.println("Reiniciando " + this.hostname); }
+}
+// Uso en el método main
+Server webServer = new Server("web-01");
+webServer.reboot();</code></pre></div>
+
+            <button class="accordion">9. Leer entrada del usuario</button>
+            <div class="panel"><p>La clase <code>Scanner</code> se usa para leer datos de entrada.</p><pre><code>import java.util.Scanner;
+Scanner scanner = new Scanner(System.in);
+System.out.print("Introduce el nombre del bucket: ");
+String bucketName = scanner.nextLine();
+System.out.println("Creando bucket: " + bucketName);
+scanner.close();</code></pre></div>
+            
+            <button class="accordion">10. Leer un archivo</button>
+            <div class="panel"><p>El manejo de archivos en Java requiere el manejo de excepciones como <code>FileNotFoundException</code>.</p><pre><code>import java.io.File;
+import java.util.Scanner;
+import java.io.FileNotFoundException;
+
+try (Scanner myReader = new Scanner(new File("config.properties"))) {
+    while (myReader.hasNextLine()) {
+        System.out.println(myReader.nextLine());
+    }
+} catch (FileNotFoundException e) {
+    System.err.println("Error: Archivo no encontrado.");
+}</code></pre></div>
+
+            <button class="accordion">11. Escribir en un archivo</button>
+            <div class="panel"><p><code>FileWriter</code> se usa para escribir en archivos, también requiere manejo de excepciones.</p><pre><code>import java.io.FileWriter;
+import java.io.IOException;
+
+try (FileWriter myWriter = new FileWriter("app.log", true)) { // true para añadir
+    myWriter.write("Aplicación iniciada correctamente.\\n");
+} catch (IOException e) {
+    System.err.println("Ocurrió un error al escribir.");
+}</code></pre></div>
+            
+            <button class="accordion">12. HashMap (Diccionarios)</button>
+            <div class="panel"><p>Implementación de un mapa de clave-valor.</p><pre><code>import java.util.HashMap;
+HashMap<String, String> tags = new HashMap<>();
+tags.put("Environment", "Production");
+tags.put("Owner", "DevOpsTeam");
+System.out.println("Owner: " + tags.get("Owner"));</code></pre></div>
+            
+            <button class="accordion">13. Manejo de Excepciones (try-catch-finally)</button>
+            <div class="panel"><p><code>finally</code> se ejecuta siempre, haya o no una excepción, útil para liberar recursos.</p><pre><code>try {
+    int[] numbers = {1, 2, 3};
+    System.out.println(numbers[5]); // Esto causará un error
+} catch (ArrayIndexOutOfBoundsException e) {
+    System.err.println("Error: El índice está fuera de los límites del array.");
+} finally {
+    System.out.println("El bloque 'try-catch' ha finalizado.");
+}</code></pre></div>
+
+            <button class="accordion">14. Petición HTTP (Java 11+)</button>
+            <div class="panel"><p>El cliente HTTP incorporado en Java moderno simplifica las llamadas a APIs.</p><pre><code>import java.net.URI;
+import java.net.http.*;
+
+HttpClient client = HttpClient.newHttpClient();
+HttpRequest request = HttpRequest.newBuilder()
+      .uri(URI.create("https://jsonplaceholder.typicode.com/todos/1"))
+      .build();
+try {
+    HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+    System.out.println(response.body());
+} catch(Exception e) {
+    e.printStackTrace();
+}</code></pre></div>
+
+            <button class="accordion">15. Trabajar con JSON (usando Gson)</button>
+            <div class="panel"><p>Gson de Google es una librería popular para trabajar con JSON.</p><pre><code>// Necesitas añadir la librería Gson a tu proyecto
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+String jsonData = "{\"name\":\"EC2 Instance\",\"status\":\"running\"}";
+JsonObject obj = JsonParser.parseString(jsonData).getAsJsonObject();
+System.out.println("El estado es: " + obj.get("status").getAsString());</code></pre></div>
+
+            <button class="accordion">16. Leer Variables de Entorno</button>
+            <div class="panel"><p>Permite configurar la aplicación sin cambiar el código.</p><pre><code>String dbHost = System.getenv("DB_HOST");
+if (dbHost == null) {
+    System.out.println("DB_HOST no está definida, usando localhost.");
+    dbHost = "localhost";
+}
+System.out.println("Conectando a la base de datos en: " + dbHost);</code></pre></div>
+
+            <button class="accordion">17. Herencia</button>
+            <div class="panel"><p>Permite a una clase (hija) heredar campos y métodos de otra (padre).</p><pre><code>class CloudResource { public String id; }
+class S3Bucket extends CloudResource { public String name; }</code></pre></div>
+            
+            <button class="accordion">18. Interfaces</button>
+            <div class="panel"><p>Define un contrato de métodos que una clase debe implementar.</p><pre><code>interface Loggable { void log(String message); }
+class ConsoleLogger implements Loggable {
+    public void log(String message) { System.out.println("LOG: " + message); }
+}</code></pre></div>
+
+            <button class="accordion">19. Streams (Java 8+)</button>
+            <div class="panel"><p>Una forma funcional de procesar colecciones de datos.</p><pre><code>import java.util.Arrays;
+import java.util.List;
+
+List<String> servers = Arrays.asList("web-01", "db-01", "web-02", "api-01");
+servers.stream()
+    .filter(s -> s.startsWith("web"))
+    .map(String::toUpperCase)
+    .forEach(System.out::println);</code></pre></div>
+            
+            <button class="accordion">20. Ejemplo con SDK de AWS v2</button>
+            <div class="panel"><p>El SDK de AWS para Java es la herramienta para interactuar con los servicios de AWS.</p><pre><code>// Necesitas el SDK de AWS para Java en tu proyecto
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.Bucket;
+
+Region region = Region.US_EAST_1;
+S3Client s3 = S3Client.builder().region(region).build();
+s3.listBuckets().buckets().forEach(b -> System.out.println(b.name()));</code></pre></div>
+
+        </div>
+
+        <!-- GIT CONTENT -->
+        <div id="Git" class="tab-content">
+            <h2>Guía Rápida de Git</h2>
+            <p>Control de versiones esencial para Infraestructura como Código (IaC), scripts y código de aplicaciones.</p>
+
+            <button class="accordion">1. Configuración Inicial</button>
+            <div class="panel"><p>Lo primero que debes hacer después de instalar Git. Esta información se usará en tus commits.</p><pre><code># Configurar tu nombre de usuario
+git config --global user.name "Tu Nombre"
+# Configurar tu email
+git config --global user.email "tu.email@example.com"</code></pre></div>
+            
+            <button class="accordion">2. Inicializar un Repositorio</button>
+            <div class="panel"><p>Convierte un directorio existente en un repositorio de Git.</p><pre><code># Crea un nuevo repositorio local en el directorio actual
+git init</code></pre></div>
+            
+            <button class="accordion">3. Clonar un Repositorio</button>
+            <div class="panel"><p>Crea una copia local de un repositorio remoto existente.</p><pre><code># Copia un repositorio remoto a tu máquina local
+git clone https://github.com/usuario/repositorio.git</code></pre></div>
+            
+            <button class="accordion">4. Ver el Estado</button>
+            <div class="panel"><p>El comando más importante. Te dice qué ha cambiado, qué está preparado para commit, etc.</p><pre><code># Muestra qué archivos han sido modificados, añadidos o eliminados
+git status</code></pre></div>
+            
+            <button class="accordion">5. Añadir Archivos al Staging Area</button>
+            <div class="panel"><p>Prepara los cambios para ser incluidos en el próximo commit.</p><pre><code># Añadir un archivo específico
+git add mi_script.py
+# Añadir todos los archivos modificados y nuevos en el directorio actual
+git add .</code></pre></div>
+            
+            <button class="accordion">6. Realizar un Commit</button>
+            <div class="panel"><p>Crea una "instantánea" de los cambios preparados en el historial del repositorio.</p><pre><code># Guarda los cambios del staging area con un mensaje descriptivo
+git commit -m "feat: Añade script para automatizar backups de base de datos"</code></pre></div>
+            
+            <button class="accordion">7. Enviar Cambios a un Repositorio Remoto</button>
+            <div class="panel"><p>Sube tus commits locales a un repositorio remoto como GitHub.</p><pre><code># Sube tus commits a la rama 'main' del repositorio remoto 'origin'
+git push origin main</code></pre></div>
+            
+            <button class="accordion">8. Actualizar desde un Repositorio Remoto</button>
+            <div class="panel"><p>Descarga los cambios del remoto y los fusiona con tu rama local.</p><pre><code># Es una combinación de 'git fetch' y 'git merge'
+git pull origin main</code></pre></div>
+            
+            <button class="accordion">9. Ver el Historial de Commits</button>
+            <div class="panel"><p>Muestra la secuencia de commits realizados en la rama actual.</p><pre><code># Muestra el historial de commits
+git log
+# Historial de forma más concisa y con gráfico de ramas
+git log --oneline --graph --decorate</code></pre></div>
+            
+            <button class="accordion">10. Crear una Nueva Rama</button>
+            <div class="panel"><p>Crea una nueva línea de desarrollo sin afectar la rama principal.</p><pre><code># Crea una nueva rama llamada 'feature/nueva-funcionalidad'
+git branch feature/nueva-funcionalidad</code></pre></div>
+            
+            <button class="accordion">11. Cambiar de Rama</button>
+            <div class="panel"><p>Mueve tu directorio de trabajo a otra rama.</p><pre><code># Cambia a la rama especificada
+git checkout feature/nueva-funcionalidad
+# Alternativa moderna (recomendada)
+git switch feature/nueva-funcionalidad</code></pre></div>
+            
+            <button class="accordion">12. Crear y Cambiar de Rama (en un solo paso)</button>
+            <div class="panel"><p>Un atajo muy común y útil.</p><pre><code>git checkout -b fix/corregir-bug-api</code></pre></div>
+            
+            <button class="accordion">13. Fusionar Ramas (Merge)</button>
+            <div class="panel"><p>Integra los cambios de una rama en otra.</p><pre><code># Primero, cambia a la rama que recibirá los cambios (ej. main)
+git switch main
+# Luego, fusiona la otra rama en la actual
+git merge feature/nueva-funcionalidad</code></pre></div>
+            
+            <button class="accordion">14. Ver Diferencias</button>
+            <div class="panel"><p>Muestra las diferencias exactas en el código.</p><pre><code># Ver cambios en el directorio de trabajo (que no están en stage)
+git diff
+# Ver cambios en el staging area (que no están en un commit)
+git diff --staged</code></pre></div>
+
+            <button class="accordion">15. Deshacer Cambios en un Archivo</button>
+            <div class="panel"><p>Revierte un archivo a su estado en el último commit.</p><pre><code># Descarta los cambios en un archivo no preparado
+git checkout -- mi_archivo.txt</code></pre></div>
+            
+            <button class="accordion">16. Revertir un Commit</button>
+            <div class="panel"><p>Crea un nuevo commit que deshace los cambios de un commit anterior. Es seguro para historiales compartidos.</p><pre><code># Revierte el último commit
+git revert HEAD
+# Revierte un commit específico por su hash
+git revert 1a2b3c4d</code></pre></div>
+
+            <button class="accordion">17. Resetear a un Commit Anterior (¡Cuidado!)</button>
+            <div class="panel"><p>Mueve el puntero de la rama hacia atrás, reescribiendo el historial. Peligroso si los commits ya están en un remoto.</p><pre><code># --hard: Descarta todos los cambios y commits. PELIGROSO.
+git reset --hard HEAD~1 # Vuelve al commit anterior al último</code></pre></div>
+            
+            <button class="accordion">18. Guardar Cambios Temporalmente (Stash)</button>
+            <div class="panel"><p>Guarda tus cambios no comiteados para poder cambiar de rama limpiamente.</p><pre><code># Guarda tus cambios actuales sin hacer commit
+git stash
+# Para aplicar los cambios guardados y eliminarlos del stash
+git stash pop</code></pre></div>
+
+            <button class="accordion">19. Ver Remotos</button>
+            <div class="panel"><p>Lista los repositorios remotos que tienes configurados.</p><pre><code># Muestra los repositorios remotos con sus URLs
+git remote -v</code></pre></div>
+
+            <button class="accordion">20. Sincronizar con el Remoto (Fetch + Rebase)</button>
+            <div class="panel"><p>Una alternativa a `git pull` que mantiene un historial más limpio y lineal.</p><pre><code># Descarga los cambios del remoto sin fusionar
+git fetch origin
+# Aplica tus commits locales encima de los cambios descargados
+git rebase origin/main</code></pre></div>
+        </div>
+
+        <!-- COMPARATIVA CONTENT -->
+        <div id="Comparativa" class="tab-content">
+            <h2>Tabla Comparativa de Comandos Básicos</h2>
+            <p>Cómo realizar tareas similares en diferentes lenguajes. Ideal para traducir rápidamente tu lógica de un lenguaje a otro.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tarea</th>
+                        <th>Bash</th>
+                        <th>Python</th>
+                        <th>Java</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Imprimir "Hola Mundo"</strong></td>
+                        <td><code>echo "Hola Mundo"</code></td>
+                        <td><code>print("Hola Mundo")</code></td>
+                        <td><code>System.out.println("Hola Mundo");</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Declarar una variable de texto</strong></td>
+                        <td><code>VAR="valor"</code></td>
+                        <td><code>var = "valor"</code></td>
+                        <td><code>String var = "valor";</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Condicional (si x es igual a 5)</strong></td>
+                        <td><code>if [ "$x" -eq 5 ]; then ...; fi</code></td>
+                        <td><code>if x == 5: ...</code></td>
+                        <td><code>if (x == 5) { ... }</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Bucle de 1 a 5</strong></td>
+                        <td><code>for i in {1..5}; do ...; done</code></td>
+                        <td><code>for i in range(1, 6): ...</code></td>
+                        <td><code>for (int i = 1; i <= 5; i++) { ... }</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Definir una función/método</strong></td>
+                        <td><code>function mi_func() { ... }</code></td>
+                        <td><code>def mi_func(): ...</code></td>
+                        <td><code>public void miMetodo() { ... }</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Comentario de una línea</strong></td>
+                        <td><code># Es un comentario</code></td>
+                        <td><code># Es un comentario</code></td>
+                        <td><code>// Es un comentario</code></td>
+                    </tr>
+                     <tr>
+                        <td><strong>Leer entrada del usuario</strong></td>
+                        <td><code>read VAR</code></td>
+                        <td><code>var = input("Prompt: ")</code></td>
+                        <td><code>Scanner s = new Scanner(System.in);<br>String var = s.nextLine();</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Ejecutar un script</strong></td>
+                        <td><code>./script.sh</code></td>
+                        <td><code>python script.py</code></td>
+                        <td><code>java MiClase</code></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <script>
+        function openTab(evt, tabName) {
+            let i, tabcontent, tabbuttons;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tabbuttons = document.getElementsByClassName("tab-button");
+            for (i = 0; i < tabbuttons.length; i++) {
+                tabbuttons[i].className = tabbuttons[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+
+        let accordions = document.getElementsByClassName("accordion");
+        for (let i = 0; i < accordions.length; i++) {
+            accordions[i].addEventListener("click", function() {
+                this.classList.toggle("active");
+                let panel = this.nextElementSibling;
+                if (panel.style.maxHeight) {
+                    panel.style.maxHeight = null;
+                } else {
+                    panel.style.maxHeight = panel.scrollHeight + "px";
+                } 
+            });
+        }
+    </script>
+
+</body>
+</html>
