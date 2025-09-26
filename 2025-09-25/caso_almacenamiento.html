@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caso de Estudio: Arquitectura de Almacenamiento para StreamFlix Global</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --header-height: 64px;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0a0a0a;
+            color: #e5e7eb;
+        }
+        .gradient-text {
+            background: linear-gradient(90deg, #22d3ee, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .glass-card {
+            background: rgba(31, 41, 55, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        .tab-button.active {
+            background-color: #0e7490;
+            color: #ffffff;
+        }
+        #solutionSection {
+            transition: opacity 0.5s ease-in-out, max-height 0.8s ease-in-out;
+        }
+        .sticky-nav {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(15px);
+            background-color: rgba(10, 10, 10, 0.7);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        section {
+            padding-top: var(--header-height);
+            margin-top: -var(--header-height);
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <!-- Header y Hero Section -->
+    <header class="relative min-h-screen flex items-center justify-center text-center px-4 sm:px-6 lg:px-8 overflow-hidden">
+        <div class="absolute inset-0">
+            <div class="absolute inset-0 bg-gray-900 opacity-60"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-black"></div>
+        </div>
+        <div class="relative max-w-4xl mx-auto">
+            <h1 class="text-4xl sm:text-5xl lg:text-7xl font-extrabold tracking-tight">
+                <span class="block text-white">Caso de Estudio:</span>
+                <span class="block gradient-text mt-2">StreamFlix Global</span>
+            </h1>
+            <p class="mt-6 max-w-2xl mx-auto text-lg sm:text-xl text-gray-300">
+                Diseñando una arquitectura de almacenamiento en la nube, escalable, resiliente y costo-eficiente para una startup de streaming de alcance mundial.
+            </p>
+        </div>
+    </header>
+
+    <!-- Barra de Navegación Fija -->
+    <nav class="sticky-nav">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-center h-16">
+                <div class="flex items-baseline space-x-1 md:space-x-1 text-xs md:text-sm flex-wrap justify-center">
+                    <a href="#escenario" class="text-gray-300 hover:bg-gray-700 hover:text-white px-2 py-2 rounded-md font-medium">Escenario</a>
+                    <a href="#fundamentos" class="text-gray-300 hover:bg-gray-700 hover:text-white px-2 py-2 rounded-md font-medium">Fundamentos</a>
+                    <a href="#aws-services" class="text-gray-300 hover:bg-gray-700 hover:text-white px-2 py-2 rounded-md font-medium">Servicios AWS</a>
+                    <a href="#azure-services" class="text-gray-300 hover:bg-gray-700 hover:text-white px-2 py-2 rounded-md font-medium">Servicios Azure</a>
+                    <a href="#gcp-services" class="text-gray-300 hover:bg-gray-700 hover:text-white px-2 py-2 rounded-md font-medium">Servicios GCP</a>
+                    <a href="#casos-de-uso" class="text-gray-300 hover:bg-gray-700 hover:text-white px-2 py-2 rounded-md font-medium">Casos de Uso</a>
+                    <a href="#discusion" class="text-gray-300 hover:bg-gray-700 hover:text-white px-2 py-2 rounded-md font-medium">Discusión</a>
+                    <a href="#solutionSectionWrapper" class="text-gray-300 hover:bg-gray-700 hover:text-white px-2 py-2 rounded-md font-medium">Solución</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+
+    <!-- Contenido del Caso -->
+    <div class="bg-black text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+
+            <!-- El Escenario -->
+            <section id="escenario">
+                <h2 class="text-3xl font-bold tracking-tight text-center gradient-text">El Escenario: El Desafío del Lanzamiento Global</h2>
+                <div class="mt-12 text-lg text-gray-300 leading-relaxed max-w-4xl mx-auto space-y-6">
+                    <p><strong class="text-cyan-400">StreamFlix Global</strong> no es solo otra plataforma de streaming. Es una startup con una visión: revolucionar la entrega de contenido multimedia en un mercado hipercompetitivo. Su plan es lanzarse simultáneamente en más de 50 países, ofreciendo una experiencia de usuario impecable desde el primer día. El equipo de inversores ha puesto una enorme presión sobre el equipo de tecnología: la plataforma debe ser robusta, ultrarrápida y, sobre todo, los costos operativos deben ser predecibles y controlados para evitar el "burn rate" (quema de capital) que ha hundido a otras startups.</p>
+                    <p>La arquitectura de microservicios está lista, pero la piedra angular que falta es la estrategia de datos. Una decisión equivocada aquí no solo impactaría el presupuesto, sino que podría generar latencia en la reproducción de videos (buffering), tiempos de carga lentos en la web (alta tasa de rebote) o, en el peor de los casos, la pérdida de valiosos activos digitales (pérdida de confianza y demandas legales). El CTO lo tiene claro: el almacenamiento no es un simple repositorio, es el corazón del negocio y un pilar fundamental de la ventaja competitiva.</p>
+                </div>
+            </section>
+            
+            <!-- Fundamentos -->
+            <section id="fundamentos" class="mt-24">
+                <h2 class="text-3xl font-bold tracking-tight text-center gradient-text">Fundamentos: Almacenamiento de Objetos y sus Niveles</h2>
+                <div class="mt-12 max-w-4xl mx-auto text-lg text-gray-300 leading-relaxed space-y-8">
+                    <div>
+                        <h3 class="text-2xl font-bold text-cyan-400 mb-4">¿Qué es el Almacenamiento de Objetos?</h3>
+                        <p>A diferencia del almacenamiento de archivos (con sus carpetas y jerarquías) o de bloques (que divide los datos en bloques de tamaño fijo), el almacenamiento de objetos gestiona los datos como unidades discretas llamadas "objetos". Cada objeto contiene tres componentes:</p>
+                        <ul class="mt-4 list-disc list-inside space-y-2">
+                            <li><strong class="text-white">Los datos en sí:</strong> El archivo de imagen, el video, el documento, etc. Puede ser de cualquier tamaño, desde kilobytes hasta terabytes.</li>
+                            <li><strong class="text-white">Metadatos extensibles:</strong> Un conjunto de etiquetas descriptivas definidas por el sistema o por el usuario. Esto es increíblemente poderoso, ya que permite indexar, buscar y gestionar objetos basándose en su contenido o propósito (ej. "video-ID: 12345", "calidad: 4K", "productora: Studio Ghibli").</li>
+                            <li><strong class="text-white">Un identificador único global (GUID):</strong> Una dirección plana que permite al sistema encontrar el objeto en un vasto espacio de nombres sin necesidad de una ruta de carpeta.</li>
+                        </ul>
+                        <p class="mt-4">Esta estructura lo hace ideal para la nube por su <strong class="text-white">escalabilidad masiva</strong>, <strong class="text-white">alta durabilidad</strong> (los datos se replican en múltiples dispositivos y ubicaciones) y <strong class="text-white">acceso programático</strong> a través de APIs web (HTTP/S), lo que facilita la integración con aplicaciones modernas.</p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-2xl font-bold text-cyan-400 mb-4">Los Niveles de Almacenamiento ("Tiers")</h3>
+                        <p>No todos los datos son iguales. Acceder a algunos datos cuesta más que a otros. Los proveedores de la nube crearon diferentes "niveles" o "clases" de almacenamiento para permitir a los usuarios equilibrar el costo con el rendimiento según la frecuencia de acceso a los datos. Es lo que se conoce como la "temperatura" de los datos.</p>
+                        <div class="mt-6 space-y-6">
+                            <div class="bg-gray-800/50 p-6 rounded-lg border border-gray-700">
+                                <h4 class="font-bold text-xl text-red-400">Nivel Caliente / Frecuente (Hot) 🔥</h4>
+                                <p class="mt-2">Optimizado para datos a los que se accede o se modifican con mucha frecuencia. <strong class="text-white">Tiene el costo de almacenamiento por GB más alto, pero el costo por acceder a los datos es el más bajo.</strong><br/><strong>Casos de uso:</strong> Activos de sitios web dinámicos, contenido de aplicaciones móviles, análisis de datos en tiempo real.</p>
+                            </div>
+                            <div class="bg-gray-800/50 p-6 rounded-lg border border-gray-700">
+                                <h4 class="font-bold text-xl text-blue-400">Nivel Frío / Esporádico (Cool) 💧</h4>
+                                <p class="mt-2">Diseñado para datos a los que se accede con poca frecuencia pero que deben estar disponibles inmediatamente cuando se solicitan. Generalmente, se espera que los datos permanezcan aquí al menos 30 días. <strong class="text-white">Tiene un costo de almacenamiento por GB más bajo que el nivel Caliente, pero un costo de acceso (por GB leído) más alto.</strong><br/><strong>Casos de uso:</strong> Copias de seguridad a corto plazo, recuperación de desastres, conjuntos de datos más antiguos para análisis ocasional.</p>
+                            </div>
+                            <div class="bg-gray-800/50 p-6 rounded-lg border border-gray-700">
+                                <h4 class="font-bold text-xl text-purple-400">Nivel de Archivo (Archive) ❄️</h4>
+                                <p class="mt-2">Para datos a los que rara vez se accede, con requisitos de latencia flexibles. Se espera que los datos permanezcan aquí durante meses o años (mínimo 90-180 días). <strong class="text-white">Ofrece un costo de almacenamiento por GB extremadamente bajo, pero el costo de acceso es el más alto y la recuperación no es instantánea (puede tardar desde minutos hasta varias horas).</strong><br/><strong>Casos de uso:</strong> Archivados a largo plazo, cumplimiento normativo, preservación de datos que rara vez se necesitarán.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Servicios AWS -->
+            <section id="aws-services" class="mt-24">
+                <h2 class="text-3xl font-bold tracking-tight text-center gradient-text">Un Vistazo Profundo a los Servicios de AWS</h2>
+                <div class="mt-12 max-w-4xl mx-auto text-lg text-gray-300 leading-relaxed space-y-12">
+                    <div>
+                        <h3 class="text-2xl font-bold text-yellow-400 mb-4">Amazon S3: El Pilar del Almacenamiento de Objetos</h3>
+                        <p>Amazon Simple Storage Service (S3) es el servicio de almacenamiento de objetos de AWS y uno de los servicios fundacionales de la nube moderna. Ofrece una infraestructura de almacenamiento de datos altamente escalable, duradera y segura. Prácticamente cualquier cantidad de datos puede ser almacenada y recuperada desde cualquier lugar. Su flexibilidad lo convierte en la base para una multitud de casos de uso, desde el alojamiento de sitios web hasta data lakes para Big Data e inteligencia artificial.</p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-2xl font-bold text-yellow-400 mb-4">Clases de Almacenamiento de Amazon S3</h3>
+                        <p>Para abordar la variedad de necesidades de acceso a datos, S3 ofrece una gama de "clases de almacenamiento" diseñadas para optimizar costos. La elección correcta depende del patrón de acceso y los requisitos de retención de los datos.</p>
+                        
+                        <div class="mt-8 space-y-8">
+                            <div class="bg-gray-800/50 p-6 rounded-lg border border-gray-700">
+                                <h4 class="font-bold text-xl text-red-400">S3 Standard 🔥 (Acceso Frecuente)</h4>
+                                <p class="mt-2">Es la clase por defecto. Diseñada para datos "calientes" que requieren acceso frecuente y de baja latencia. Ofrece alta disponibilidad (99.99%) y durabilidad (99.999999999%) al replicar datos automáticamente en múltiples Zonas de Disponibilidad (AZs).<br/>
+                                <strong class="text-white mt-2 block">Ideal para:</strong> Sitios web dinámicos, distribución de contenido, aplicaciones móviles y de juegos, y cargas de trabajo de análisis de Big Data donde los datos se leen constantemente.
+                                </p>
+                            </div>
+                             <div class="bg-gray-800/50 p-6 rounded-lg border border-gray-700">
+                                <h4 class="font-bold text-xl text-green-400">S3 Intelligent-Tiering 🌡️ (Acceso Variable)</h4>
+                                <p class="mt-2">Una clase única que optimiza costos automáticamente. Monitorea los patrones de acceso de cada objeto y los mueve entre dos niveles: uno para acceso frecuente y otro, más económico, para acceso infrecuente. Si un objeto en el nivel infrecuente es accedido, se mueve de vuelta al nivel frecuente. Todo esto sin impacto en el rendimiento y sin tarifas de recuperación.<br/>
+                                <strong class="text-white mt-2 block">Ideal para:</strong> Datos con patrones de acceso desconocidos, cambiantes o impredecibles, como el contenido generado por usuarios. Es la opción perfecta para "configurar y olvidar", dejando que AWS optimice los costos.
+                                </p>
+                            </div>
+                            <div class="bg-gray-800/50 p-6 rounded-lg border border-gray-700">
+                                <h4 class="font-bold text-xl text-blue-400">S3 Standard-IA y S3 One Zone-IA 💧 (Acceso Infrecuente)</h4>
+                                <p class="mt-2">Diseñadas para datos "fríos" que se acceden con menos frecuencia pero que requieren acceso rápido cuando es necesario. Tienen un costo de almacenamiento por GB más bajo que S3 Standard, pero cobran una tarifa por cada GB de datos recuperados. La diferencia clave es la resiliencia: <strong>Standard-IA</strong> replica los datos en múltiples AZs, mientras que <strong>One Zone-IA</strong> los almacena en una sola AZ, ofreciendo un costo aún menor a cambio de una menor disponibilidad. One Zone-IA es perfecto para datos que se pueden recrear fácilmente.<br/>
+                                <strong class="text-white mt-2 block">Ideal para:</strong> Copias de seguridad a largo plazo, archivos compartidos de uso poco frecuente, datos para recuperación de desastres.
+                                </p>
+                            </div>
+                            <div class="bg-gray-800/50 p-6 rounded-lg border border-gray-700">
+                                <h4 class="font-bold text-xl text-purple-400">S3 Glacier (Clases de Archivado) ❄️🧊</h4>
+                                <p class="mt-2">Esta familia está diseñada para el archivado de datos a largo plazo y de bajo costo.
+                                <ul class="list-disc list-inside mt-3 space-y-2">
+                                    <li><strong>S3 Glacier Instant Retrieval:</strong> Para archivos que se acceden muy rara vez (quizás una vez por trimestre) pero que necesitan ser recuperados en milisegundos. Ofrece el acceso más rápido al archivo con un costo de almacenamiento muy bajo.</li>
+                                    <li><strong>S3 Glacier Flexible Retrieval:</strong> La opción balanceada. Ofrece varias opciones de recuperación, desde minutos (expedita) hasta horas (estándar, gratuita). Es ideal para backups donde se puede planificar la recuperación.</li>
+                                    <li><strong>S3 Glacier Deep Archive:</strong> La clase de almacenamiento más barata de toda la nube. Diseñada para la retención de datos a muy largo plazo (7-10 años) que casi nunca se necesitarán. La recuperación tarda hasta 12 horas.</li>
+                                </ul>
+                                <strong class="text-white mt-2 block">Ideal para:</strong> Reemplazo de cintas magnéticas, archivado para cumplimiento normativo (registros médicos, financieros), y preservación de activos digitales valiosos.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Servicios Azure -->
+            <section id="azure-services" class="mt-24">
+                <h2 class="text-3xl font-bold tracking-tight text-center gradient-text">Un Vistazo Profundo a los Servicios de Azure</h2>
+                <div class="mt-12 max-w-4xl mx-auto text-lg text-gray-300 leading-relaxed space-y-12">
+                    <div>
+                        <h3 class="text-2xl font-bold text-blue-400 mb-4">Azure Blob Storage: Almacenamiento Masivo en la Nube</h3>
+                        <p>Azure Blob (Binary Large Object) Storage es la solución de almacenamiento de objetos de Microsoft. Está optimizada para almacenar cantidades masivas de datos no estructurados, como texto o datos binarios. Al igual que S3, es la base para construir aplicaciones nativas de la nube, data lakes y soluciones de archivado. Se integra profundamente con el resto del ecosistema de Azure, lo que lo convierte en una opción natural para las organizaciones que ya invierten en la tecnología de Microsoft.</p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-2xl font-bold text-blue-400 mb-4">Niveles de Acceso de Azure Blob Storage</h3>
+                        <p>Azure clasifica sus opciones de almacenamiento en "niveles de acceso", que permiten a los usuarios gestionar los costos de manera eficaz basándose en cómo y cuándo se utilizan los datos.</p>
+                        
+                        <div class="mt-8 space-y-8">
+                            <div class="bg-gray-800/50 p-6 rounded-lg border border-gray-700">
+                                <h4 class="font-bold text-xl text-red-400">Nivel Frecuente (Hot) 🔥</h4>
+                                <p class="mt-2">Es el nivel estándar para datos en uso activo. Está optimizado para lecturas y escrituras frecuentes. Ofrece la latencia de acceso más baja, pero a cambio, el costo de almacenamiento por GB es el más alto de todos los niveles en línea.<br/>
+                                <strong class="text-white mt-2 block">Ideal para:</strong> Datos que están siendo procesados activamente, activos de sitios web que se sirven a los usuarios, datos de aplicaciones interactivas.
+                                </p>
+                            </div>
+                             <div class="bg-gray-800/50 p-6 rounded-lg border border-gray-700">
+                                <h4 class="font-bold text-xl text-cyan-400">Nivel Esporádico (Cool) 💧</h4>
+                                <p class="mt-2">Diseñado para datos a los que se accede con poca frecuencia y que se almacenan durante al menos 30 días. Tiene un costo de almacenamiento por GB significativamente más bajo que el nivel Frecuente, pero introduce un costo por GB leído. Es el equilibrio perfecto para datos que deben estar disponibles al instante, pero cuyo acceso es ocasional.<br/>
+                                <strong class="text-white mt-2 block">Ideal para:</strong> Conjuntos de datos para análisis mensual, copias de seguridad a corto plazo, contenido multimedia más antiguo que aún se sirve a demanda.
+                                </p>
+                            </div>
+                            <div class="bg-gray-800/50 p-6 rounded-lg border border-gray-700">
+                                <h4 class="font-bold text-xl text-indigo-400">Nivel Frío (Cold) ❄️</h4>
+                                <p class="mt-2">Este es un nivel intermedio entre Esporádico y Archivo, diseñado para datos almacenados por al menos 90 días con acceso muy infrecuente. Ofrece un costo de almacenamiento aún más bajo que el nivel Esporádico, pero con costos de acceso ligeramente más altos. Sigue siendo un nivel "en línea", lo que significa que los datos están disponibles al instante.<br/>
+                                <strong class="text-white mt-2 block">Ideal para:</strong> Copias de seguridad a más largo plazo, telemetría original que se conserva por si se necesita reprocesar, datos de cumplimiento que podrían necesitarse con poca antelación.
+                                </p>
+                            </div>
+                            <div class="bg-gray-800/50 p-6 rounded-lg border border-gray-700">
+                                <h4 class="font-bold text-xl text-purple-400">Nivel de Archivo (Archive) 🧊</h4>
+                                <p class="mt-2">El nivel más económico de Azure, diseñado para datos que se almacenan durante al menos 180 días y que pueden tolerar varias horas de latencia de recuperación. Es un nivel "sin conexión": para leer un objeto, primero se debe iniciar un proceso llamado "rehidratación", que mueve el objeto a un nivel en línea (Frecuente o Esporádico).<br/>
+                                <strong class="text-white mt-2 block">Ideal para:</strong> Retención de datos a largo plazo por motivos legales o de cumplimiento, datos sin procesar que se conservan después del análisis, reemplazo de archivos en cinta.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Servicios GCP -->
+            <section id="gcp-services" class="mt-24">
+                <h2 class="text-3xl font-bold tracking-tight text-center gradient-text">Un Vistazo Profundo a los Servicios de Google Cloud</h2>
+                <div class="mt-12 max-w-4xl mx-auto text-lg text-gray-300 leading-relaxed space-y-12">
+                    <div>
+                        <h3 class="text-2xl font-bold text-green-400 mb-4">Google Cloud Storage: Almacenamiento Unificado y Global</h3>
+                        <p>Google Cloud Storage (GCS) es el servicio de almacenamiento de objetos de Google Cloud Platform. Se destaca por su rendimiento, seguridad y un modelo de precios simple. Una de sus características distintivas es ofrecer un único API para todas las clases de almacenamiento, lo que simplifica la gestión de datos. Además, los buckets de GCS pueden ser multi-regionales, ofreciendo alta disponibilidad y baja latencia para datos distribuidos geográficamente de forma nativa.</p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-2xl font-bold text-green-400 mb-4">Clases de Almacenamiento de Google Cloud Storage</h3>
+                        <p>GCS utiliza "clases de almacenamiento" para optimizar el balance entre costo y disponibilidad, muy similar a sus competidores, pero con un enfoque en la simplicidad y la velocidad de acceso en todas sus clases en línea.</p>
+                        
+                        <div class="mt-8 space-y-8">
+                            <div class="bg-gray-800/50 p-6 rounded-lg border border-gray-700">
+                                <h4 class="font-bold text-xl text-red-400">Standard Storage 🔥 (Almacenamiento Estándar)</h4>
+                                <p class="mt-2">Diseñado para datos "calientes" con acceso frecuente y de corta duración. Ofrece la latencia más baja (similar a un CDN para el primer byte) y es ideal para cargas de trabajo de alto rendimiento. No tiene una duración mínima de almacenamiento.<br/>
+                                <strong class="text-white mt-2 block">Ideal para:</strong> Alojamiento de sitios web, streaming de video y música, contenido para aplicaciones móviles, datos para machine learning interactivo.
+                                </p>
+                            </div>
+                             <div class="bg-gray-800/50 p-6 rounded-lg border border-gray-700">
+                                <h4 class="font-bold text-xl text-cyan-400">Nearline Storage 💧 (Almacenamiento de Acceso Poco Frecuente)</h4>
+                                <p class="mt-2">Para datos a los que planeas acceder menos de una vez al mes. Es una opción de bajo costo para backups, multimedia más antigua o datos que necesitas tener disponibles rápidamente pero que no usas a diario. Tiene un período mínimo de almacenamiento de 30 días y se aplican costos de recuperación de datos.<br/>
+                                <strong class="text-white mt-2 block">Ideal para:</strong> Copias de seguridad de datos, archivos de contenido que ya no se editan activamente, almacenamiento de logs para análisis ocasional.
+                                </p>
+                            </div>
+                            <div class="bg-gray-800/50 p-6 rounded-lg border border-gray-700">
+                                <h4 class="font-bold text-xl text-blue-400">Coldline Storage ❄️ (Almacenamiento en Frío)</h4>
+                                <p class="mt-2">Una opción aún más económica para datos a los que planeas acceder menos de una vez por trimestre. Es ideal para la recuperación de desastres o datos archivados que aún necesitas que sean accesibles en milisegundos cuando se solicitan. Tiene un período mínimo de almacenamiento de 90 días y costos de recuperación más altos que Nearline.<br/>
+                                <strong class="text-white mt-2 block">Ideal para:</strong> Archivado de datos a mediano plazo, recuperación ante desastres (DR), versiones antiguas de datos.
+                                </p>
+                            </div>
+                            <div class="bg-gray-800/50 p-6 rounded-lg border border-gray-700">
+                                <h4 class="font-bold text-xl text-purple-400">Archive Storage 🧊 (Almacenamiento de Archivo)</h4>
+                                <p class="mt-2">Es la clase de menor costo, diseñada para el archivado a largo plazo, la preservación de datos y el cumplimiento normativo. Los datos tienen la misma disponibilidad y acceso en milisegundos que las otras clases, pero los costos de operación (lectura y recuperación) son los más altos. Tiene un período mínimo de almacenamiento de 365 días.<br/>
+                                <strong class="text-white mt-2 block">Ideal para:</strong> Cumplimiento regulatorio, preservación de propiedad intelectual, reemplazo de bibliotecas de cintas físicas.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Casos de Uso -->
+            <section id="casos-de-uso" class="mt-24">
+                <h2 class="text-3xl font-bold tracking-tight text-center gradient-text">Requerimientos Críticos: Los 5 Pilares del Almacenamiento</h2>
+                <p class="mt-4 max-w-3xl mx-auto text-center text-gray-400">Cada tipo de dato tiene una necesidad, un ciclo de vida y un impacto directo en la experiencia del usuario y en los costos operativos.</p>
+                <div class="mt-12 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+                    
+                    <div class="glass-card rounded-2xl p-6">
+                        <div class="flex items-center justify-center h-12 w-12 rounded-lg bg-cyan-500 text-white"><svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9V3m0 18a9 9 0 009-9m-9 9a9 9 0 00-9-9" /></svg></div>
+                        <h3 class="mt-5 text-xl font-bold text-white">1. Alojamiento Web y Contenido Estático Global</h3>
+                        <p class="mt-2 text-base text-gray-300">El portal web y todos sus activos (imágenes, CSS, JS) deben tener tiempos de carga inferiores a un segundo para millones de usuarios simultáneos. Se debe garantizar una entrega de baja latencia a nivel global, integrando una CDN para cachear contenido en el borde y proteger contra ataques DDoS.</p>
+                        <ul class="mt-4 text-sm text-gray-400 list-disc list-inside space-y-1">
+                            <li><strong class="text-cyan-300">Temperatura:</strong> Caliente 🔥</li>
+                            <li><strong class="text-cyan-300">Acceso:</strong> Muy Frecuente</li>
+                            <li><strong class="text-cyan-300">Requisito:</strong> Latencia ultra baja</li>
+                        </ul>
+                    </div>
+
+                    <div class="glass-card rounded-2xl p-6">
+                        <div class="flex items-center justify-center h-12 w-12 rounded-lg bg-cyan-500 text-white"><svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg></div>
+                        <h3 class="mt-5 text-xl font-bold text-white">2. Almacenamiento y Transcodificación de Videos Máster</h3>
+                        <p class="mt-2 text-base text-gray-300">Los archivos máster 4K/8K son la materia prima. Se ingieren una vez para un proceso de transcodificación (generando múltiples bitrates: 1080p, 720p, etc.) y luego rara vez se tocan. Se requiere durabilidad de "once nueves" (99.999999999%), lo que significa que de 10,000 archivos, se podría perder uno cada 10 millones de años.</p>
+                        <ul class="mt-4 text-sm text-gray-400 list-disc list-inside space-y-1">
+                            <li><strong class="text-cyan-300">Temperatura:</strong> Frío ❄️</li>
+                            <li><strong class="text-cyan-300">Acceso:</strong> Infrecuente</li>
+                            <li><strong class="text-cyan-300">Requisito:</strong> Durabilidad extrema y bajo costo por GB.</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="glass-card rounded-2xl p-6">
+                        <div class="flex items-center justify-center h-12 w-12 rounded-lg bg-cyan-500 text-white"><svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg></div>
+                        <h3 class="mt-5 text-xl font-bold text-white">3. Contenido Generado por el Usuario (CGU)</h3>
+                        <p class="mt-2 text-base text-gray-300">Imágenes de perfil, listas de reproducción y futuros videos cortos. El patrón de acceso es caótico: un avatar se accede en cada carga de página, pero una lista de reproducción antigua casi nunca. El sistema debe optimizar costos automáticamente sin intervención manual, evitando pagar de más por datos fríos.</p>
+                        <ul class="mt-4 text-sm text-gray-400 list-disc list-inside space-y-1">
+                             <li><strong class="text-cyan-300">Temperatura:</strong> Variable 🌡️</li>
+                            <li><strong class="text-cyan-300">Acceso:</strong> Impredecible</li>
+                            <li><strong class="text-cyan-300">Requisito:</strong> Optimización de costos inteligente.</li>
+                        </ul>
+                    </div>
+
+                    <div class="glass-card rounded-2xl p-6">
+                        <div class="flex items-center justify-center h-12 w-12 rounded-lg bg-cyan-500 text-white"><svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" /></svg></div>
+                        <h3 class="mt-5 text-xl font-bold text-white">4. Archivado de Registros y Cumplimiento Normativo</h3>
+                        <p class="mt-2 text-base text-gray-300">Logs de acceso y transacciones (GDPR, CCPA) y contratos deben conservarse por 7 años. Se accederán solo en caso de auditoría, pero deben estar disponibles con un preaviso de 48 horas. Se debe considerar la inmutabilidad (WORM - Write-Once-Read-Many) para garantizar la integridad de los registros legales.</p>
+                        <ul class="mt-4 text-sm text-gray-400 list-disc list-inside space-y-1">
+                             <li><strong class="text-cyan-300">Temperatura:</strong> Congelado 🧊</li>
+                            <li><strong class="text-cyan-300">Acceso:</strong> Extremadamente raro</li>
+                            <li><strong class="text-cyan-300">Requisito:</strong> Costo de almacenamiento más bajo posible.</li>
+                        </ul>
+                    </div>
+
+                    <div class="glass-card rounded-2xl p-6">
+                        <div class="flex items-center justify-center h-12 w-12 rounded-lg bg-cyan-500 text-white"><svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg></div>
+                        <h3 class="mt-5 text-xl font-bold text-white">5. Análisis de Big Data y Telemetría</h3>
+                        <p class="mt-2 text-base text-gray-300">Datos de telemetría en formatos optimizados (Parquet, Avro) se almacenan en un data lake. El equipo de Data Science ejecuta trabajos de análisis masivo (SQL, Spark) una vez al mes. El acceso es intensivo pero infrecuente. Se necesita un balance óptimo entre el costo de almacenamiento mensual y el costo de lectura durante los picos de análisis.</p>
+                        <ul class="mt-4 text-sm text-gray-400 list-disc list-inside space-y-1">
+                            <li><strong class="text-cyan-300">Temperatura:</strong> Fresco 💧</li>
+                            <li><strong class="text-cyan-300">Acceso:</strong> Infrecuente pero masivo</li>
+                            <li><strong class="text-cyan-300">Requisito:</strong> Balance costo/lectura.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Puntos de Discusión -->
+            <section id="discusion" class="mt-24 max-w-4xl mx-auto">
+                <h2 class="text-3xl font-bold tracking-tight text-center gradient-text">Puntos Clave para la Discusión</h2>
+                <p class="mt-4 text-center text-gray-400">Como arquitectos de la solución, su misión es proponer un diseño que responda a estas preguntas cruciales.</p>
+                <div class="mt-12 space-y-6 text-lg">
+                    <div class="bg-gray-800/50 p-6 rounded-lg border border-gray-700">
+                        <h3 class="font-bold text-cyan-400">Clasificación y Ciclo de Vida de los Datos</h3>
+                        <p class="mt-2 text-gray-300">Para cada caso de uso, ¿cómo justificarían la "temperatura" asignada? ¿Qué políticas de ciclo de vida automatizarían para mover datos entre diferentes niveles de almacenamiento y cuándo deberían activarse (ej. después de 30, 60, 90 días)?</p>
+                    </div>
+                    <div class="bg-gray-800/50 p-6 rounded-lg border border-gray-700">
+                        <h3 class="font-bold text-cyan-400">Selección de Servicios y Justificación Técnica</h3>
+                        <p class="mt-2 text-gray-300">¿Qué servicios específicos de AWS S3 o Azure Blob Storage elegirían para cada pilar? No basta con nombrar el servicio; deben explicar por qué su modelo de costo y rendimiento es el ideal para ese requerimiento específico frente a las otras alternativas.</p>
+                    </div>
+                     <div class="bg-gray-800/50 p-6 rounded-lg border border-gray-700">
+                        <h3 class="font-bold text-cyan-400">Rendimiento Global y Experiencia de Usuario</h3>
+                        <p class="mt-2 text-gray-300">El almacenamiento de objetos por sí solo no garantiza una entrega rápida a nivel mundial. ¿Qué otro servicio es absolutamente indispensable integrar para el caso de uso #1 y cómo funciona para minimizar la latencia?</p>
+                    </div>
+                    <div class="bg-gray-800/50 p-6 rounded-lg border border-gray-700">
+                        <h3 class="font-bold text-cyan-400">Seguridad, Cumplimiento y Control de Acceso</h3>
+                        <p class="mt-2 text-gray-300">¿Cómo diseñarían una estrategia de seguridad multicapa? Consideren la encriptación (en tránsito y en reposo), políticas de acceso a nivel de bucket y de objeto, y cómo garantizarían que solo los productores de contenido puedan subir videos máster y que los datos de los usuarios sean privados.</p>
+                    </div>
+                    <div class="bg-gray-800/50 p-6 rounded-lg border border-gray-700">
+                        <h3 class="font-bold text-cyan-400">Análisis de Costos y Sostenibilidad Financiera</h3>
+                        <p class="mt-2 text-gray-300">¿Cuáles son los 3 principales factores de costo en una solución de almacenamiento de objetos (más allá del simple almacenamiento por GB)? ¿Cómo podría una mala elección en el caso #5 (Big Data) disparar la factura mensual de forma inesperada?</p>
+                    </div>
+                </div>
+            </section>
+            
+             <!-- Wrapper para el botón de solución y la sección misma -->
+            <div id="solutionSectionWrapper" class="mt-24 text-center">
+                <button id="revealButton" class="bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-white font-bold py-4 px-8 rounded-full text-xl transform hover:scale-105 transition-transform duration-300">
+                    Revelar Propuesta de Solución
+                </button>
+
+                <!-- Sección de la Solución (Oculta por defecto) -->
+                <section id="solutionSection" class="mt-12 hidden opacity-0 max-h-0 overflow-hidden text-left">
+                    <h2 class="text-3xl font-bold tracking-tight text-center gradient-text">Propuesta de Arquitectura de Solución</h2>
+                    <p class="mt-4 max-w-3xl mx-auto text-center text-gray-400">A continuación se presenta una arquitectura detallada, comparando las implementaciones en AWS, Azure y GCP, justificando cada decisión técnica.</p>
+                    
+                    <div class="mt-12 max-w-6xl mx-auto">
+                        <div class="flex justify-center border-b border-gray-700">
+                            <button id="tab-aws" class="tab-button active text-lg font-semibold py-3 px-6 text-gray-400 border-b-2 border-transparent hover:text-white transition">AWS</button>
+                            <button id="tab-azure" class="tab-button text-lg font-semibold py-3 px-6 text-gray-400 border-b-2 border-transparent hover:text-white transition">Azure</button>
+                            <button id="tab-gcp" class="tab-button text-lg font-semibold py-3 px-6 text-gray-400 border-b-2 border-transparent hover:text-white transition">GCP</button>
+                        </div>
+                    </div>
+
+                    <div class="mt-8">
+                        <div id="content-aws" class="tab-content space-y-10">
+                            <div class="text-center mb-10"><h3 class="text-2xl font-bold text-white">Arquitectura de Solución en <span class="text-yellow-400">Amazon Web Services (AWS)</span></h3><p class="text-gray-400">Aprovechando la madurez y granularidad del ecosistema de almacenamiento de S3.</p></div>
+                            <div class="space-y-8 max-w-4xl mx-auto">
+                                <div class="glass-card p-6 rounded-lg"><h4 class="font-bold text-lg text-cyan-300">1. Alojamiento Web: Amazon S3 Standard + Amazon CloudFront</h4><p class="text-gray-300 mt-2">Se utiliza un bucket S3 en modo "Alojamiento de sitio web estático". S3 Standard ofrece la más alta durabilidad y la menor latencia para acceso frecuente. La clave es la integración con <strong class="text-white">Amazon CloudFront (CDN)</strong>. CloudFront distribuye y cachea el contenido en cientos de "Edge Locations" globales. Cuando un usuario en Japón accede al sitio, no lo obtiene de un servidor en EE.UU., sino de un punto de presencia en Tokio, reduciendo la latencia de cientos de milisegundos a menos de 50. Esto también reduce drásticamente los costos de transferencia de datos desde S3.</p></div>
+                                <div class="glass-card p-6 rounded-lg"><h4 class="font-bold text-lg text-cyan-300">2. Videos Máster: Amazon S3 Glacier Instant Retrieval</h4><p class="text-gray-300 mt-2">Aunque estos archivos se acceden raramente, la transcodificación podría requerir un acceso rápido si un proceso falla. S3 Glacier Instant Retrieval ofrece un costo de almacenamiento muy bajo, similar al de archivo, pero con recuperación en milisegundos. Se establecería una política de ciclo de vida: al subirse, el video máster reside en S3 Standard-IA (Infrequent Access) durante 30 días. Si no se accede en ese tiempo, se mueve automáticamente a Glacier Instant Retrieval, optimizando el costo sin sacrificar la agilidad si se necesita recuperar un archivo rápidamente.</p></div>
+                                <div class="glass-card p-6 rounded-lg"><h4 class="font-bold text-lg text-cyan-300">3. Contenido de Usuario: Amazon S3 Intelligent-Tiering</h4><p class="text-gray-300 mt-2">Esta es la solución perfecta para patrones de acceso desconocidos. S3 Intelligent-Tiering monitorea cada objeto individualmente. Si una imagen de perfil no se accede en 30 días, la mueve a un nivel de acceso infrecuente (más barato) de forma automática y transparente. Si un día ese usuario vuelve y accede a su perfil, el objeto se mueve de nuevo al nivel de acceso frecuente. Todo esto sin costos de transacción por el movimiento ni penalizaciones por la recuperación, lo que lo convierte en la opción más costo-eficiente y sin necesidad de gestión manual.</p></div>
+                                <div class="glass-card p-6 rounded-lg"><h4 class="font-bold text-lg text-cyan-300">4. Archivado de Registros: Amazon S3 Glacier Deep Archive</h4><p class="text-gray-300 mt-2">Es la clase de almacenamiento más barata del mercado. Diseñada para retención a largo plazo de datos que casi nunca se tocarán. El costo por GB/mes es una fracción de céntimo. La recuperación tarda hasta 12 horas, lo cual es perfectamente aceptable para el requisito de auditoría de 48 horas. Se implementaría una política de ciclo de vida que envíe todos los logs con más de 90 días directamente a esta clase.</p></div>
+                                <div class="glass-card p-6 rounded-lg"><h4 class="font-bold text-lg text-cyan-300">5. Big Data: Amazon S3 Standard-Infrequent Access (S3 Standard-IA)</h4><p class="text-gray-300 mt-2">Este nivel ofrece un costo de almacenamiento más bajo que S3 Standard, pero cobra una tarifa por GB recuperado. Es el balance perfecto para este caso de uso: durante 29 días del mes, los datos reposan a un costo reducido. Durante los días de análisis, se paga la tarifa de recuperación por el acceso masivo. Este modelo es mucho más barato que mantener los datos en S3 Standard todo el mes solo por unos pocos días de uso intensivo.</p></div>
+                            </div>
+                        </div>
+                        <div id="content-azure" class="tab-content hidden space-y-10">
+                            <div class="text-center mb-10"><h3 class="text-2xl font-bold text-white">Arquitectura de Solución en <span class="text-blue-400">Microsoft Azure</span></h3><p class="text-gray-400">Integrando con el ecosistema de Azure para una solución robusta y competitiva.</p></div>
+                            <div class="space-y-8 max-w-4xl mx-auto">
+                                <div class="glass-card p-6 rounded-lg"><h4 class="font-bold text-lg text-blue-300">1. Alojamiento Web: Azure Blob Storage (Nivel Frecuente) + Azure CDN</h4><p class="text-gray-300 mt-2">De forma análoga a AWS, se configura una cuenta de almacenamiento de Azure Blob en modo "Sitio web estático", utilizando el nivel "Frecuente" (Hot) para una latencia mínima. La integración con <strong class="text-white">Azure CDN</strong> es igualmente crítica aquí, utilizando la red global de Microsoft para cachear y servir el contenido desde el punto más cercano al usuario, garantizando un rendimiento global competitivo.</p></div>
+                                <div class="glass-card p-6 rounded-lg"><h4 class="font-bold text-lg text-blue-300">2. Videos Máster: Azure Blob Storage (Nivel Esporádico -> Archivo)</h4><p class="text-gray-300 mt-2">Los archivos se subirían inicialmente al nivel "Esporádico" (Cool), que es más económico para datos accedidos con poca frecuencia. Se configuraría una "Directiva de administración del ciclo de vida" para que, después de 30 o 60 días sin acceso, los blobs se muevan automáticamente al nivel "Archivo" (Archive), que ofrece el costo de almacenamiento a largo plazo más bajo. La "rehidratación" desde el nivel Archivo puede tardar varias horas.</p></div>
+                                <div class="glass-card p-6 rounded-lg"><h4 class="font-bold text-lg text-blue-300">3. Contenido de Usuario: Azure Blob Storage (Nivel Frecuente + Ciclo de Vida)</h4><p class="text-gray-300 mt-2">Azure no posee un equivalente directo a S3 Intelligent-Tiering. La estrategia aquí implica más gestión manual. Los datos se alojarían por defecto en el nivel "Frecuente". Se crearía una política de ciclo de vida basada en el "último acceso". Por ejemplo: "Si un blob no se ha accedido en 60 días, moverlo al nivel Esporádico". Esto optimiza costos, pero requiere una planificación más cuidadosa y hay pequeños costos de transacción por cada movimiento de objeto entre niveles.</p></div>
+                                <div class="glass-card p-6 rounded-lg"><h4 class="font-bold text-lg text-blue-300">4. Archivado de Registros: Azure Blob Storage (Nivel de Archivo)</h4><p class="text-gray-300 mt-2">El nivel "Archivo" de Azure es la solución directa para este requisito. Ofrece un precio por GB/mes extremadamente bajo, ideal para el cumplimiento normativo a largo plazo. La recuperación de datos (rehidratación) es un proceso que se inicia y puede tardar varias horas, lo cual se alinea con el requerimiento de tener los datos disponibles en un plazo de 48 horas para auditorías.</p></div>
+                                <div class="glass-card p-6 rounded-lg"><h4 class="font-bold text-lg text-blue-300">5. Big Data: Azure Blob Storage (Nivel Esporádico)</h4><p class="text-gray-300 mt-2">El nivel "Esporádico" (Cool) de Azure está diseñado precisamente para este tipo de escenario. Ofrece un costo de almacenamiento mensual significativamente más bajo que el nivel Frecuente, a cambio de un costo de acceso por GB leído más alto. Para un análisis masivo mensual, el ahorro en almacenamiento durante el resto del mes compensa con creces el mayor costo de lectura durante los pocos días de procesamiento intensivo.</p></div>
+                            </div>
+                        </div>
+                        <div id="content-gcp" class="tab-content hidden space-y-10">
+                            <div class="text-center mb-10"><h3 class="text-2xl font-bold text-white">Arquitectura de Solución en <span class="text-green-400">Google Cloud Platform (GCP)</span></h3><p class="text-gray-400">Utilizando la simplicidad y el rendimiento global de Google Cloud Storage.</p></div>
+                            <div class="space-y-8 max-w-4xl mx-auto">
+                                <div class="glass-card p-6 rounded-lg"><h4 class="font-bold text-lg text-green-300">1. Alojamiento Web: Google Cloud Storage (Standard) + Cloud CDN</h4><p class="text-gray-300 mt-2">Un bucket de GCS se configura para servir contenido estático. La clase <strong class="text-white">Standard</strong> es la elección obvia por su baja latencia. La integración con <strong class="text-white">Cloud CDN</strong> es fundamental; utiliza la red global de Google para cachear el contenido cerca de los usuarios, ofreciendo un rendimiento excepcional y reduciendo los costos de salida de datos (egress).</p></div>
+                                <div class="glass-card p-6 rounded-lg"><h4 class="font-bold text-lg text-green-300">2. Videos Máster: Google Cloud Storage (Coldline)</h4><p class="text-gray-300 mt-2">Los videos máster se acceden muy pocas veces. La clase <strong class="text-white">Coldline</strong> es ideal, ya que está diseñada para acceso trimestral. A diferencia de las soluciones de archivo de la competencia, la recuperación de datos es instantánea (milisegundos), lo que es una gran ventaja si un proceso de transcodificación necesita re-ejecutarse. Se usaría una política de ciclo de vida para mover los objetos de Nearline a Coldline después de 60 días.</p></div>
+                                <div class="glass-card p-6 rounded-lg"><h4 class="font-bold text-lg text-green-300">3. Contenido de Usuario: Google Cloud Storage (Standard con Autoclass)</h4><p class="text-gray-300 mt-2">GCS ofrece una función llamada <strong class="text-white">Autoclass</strong>. Es el equivalente de Google a S3 Intelligent-Tiering. Cuando se activa en un bucket, GCS monitorea los patrones de acceso y mueve automáticamente los objetos a clases de almacenamiento más frías (Nearline, Coldline) si no se acceden. Si se vuelve a acceder a un objeto, se mueve de nuevo a Standard. Esto optimiza los costos sin gestión manual y es perfecto para el patrón de acceso impredecible del CGU.</p></div>
+                                <div class="glass-card p-6 rounded-lg"><h4 class="font-bold text-lg text-green-300">4. Archivado de Registros: Google Cloud Storage (Archive)</h4><p class="text-gray-300 mt-2">La clase <strong class="text-white">Archive</strong> es la más económica para el almacenamiento a largo plazo. Con un período de retención mínimo de 365 días, es perfecta para cumplir con el requisito de 7 años. Aunque los costos de acceso son más altos, la recuperación sigue siendo instantánea, una diferencia clave con las soluciones de archivo de AWS y Azure que pueden tardar horas.</p></div>
+                                <div class="glass-card p-6 rounded-lg"><h4 class="font-bold text-lg text-green-300">5. Big Data: Google Cloud Storage (Nearline)</h4><p class="text-gray-300 mt-2">La clase <strong class="text-white">Nearline</strong> está diseñada para datos a los que se accede menos de una vez al mes. Se ajusta perfectamente al caso de uso de análisis de Big Data. Los datos se almacenan a un bajo costo durante todo el mes, y se paga una pequeña tarifa de recuperación cuando el equipo de ciencia de datos ejecuta sus trabajos de análisis masivo.</p></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-20 max-w-7xl mx-auto">
+                         <h3 class="text-2xl font-bold text-center text-white">Análisis Comparativo: AWS vs. Azure vs. GCP</h3>
+                         <div class="mt-8 overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-700">
+                                <thead class="bg-gray-800/50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-cyan-300 uppercase tracking-wider">Característica</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-yellow-300 uppercase tracking-wider">AWS (Amazon S3)</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-blue-300 uppercase tracking-wider">Azure (Blob Storage)</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-green-300 uppercase tracking-wider">GCP (Cloud Storage)</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-gray-900/50 divide-y divide-gray-700">
+                                    <tr class="hover:bg-gray-800/60">
+                                        <td class="px-6 py-4 whitespace-nowrap font-medium text-white">Ventaja Clave</td>
+                                        <td class="px-6 py-4 whitespace-normal text-gray-300"><strong class="text-yellow-400">S3 Intelligent-Tiering:</strong> Automatización real para patrones de acceso impredecibles sin costo de gestión. Es una ventaja competitiva fuerte.</td>
+                                        <td class="px-6 py-4 whitespace-normal text-gray-300"><strong class="text-blue-400">Integración Ecosistema:</strong> Ventaja clara para empresas "Microsoft-first", con integración nativa con Azure AD, Power BI, etc.</td>
+                                        <td class="px-6 py-4 whitespace-normal text-gray-300"><strong class="text-green-400">Rendimiento y Simplicidad:</strong> Acceso instantáneo a datos en todas las clases, y una API unificada. La función Autoclass es muy potente.</td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-800/60">
+                                        <td class="px-6 py-4 whitespace-nowrap font-medium text-white">Desventaja / Consideración</td>
+                                        <td class="px-6 py-4 whitespace-normal text-gray-300">El modelo de precios puede ser más complejo debido a la gran cantidad de clases de almacenamiento y tipos de solicitud.</td>
+                                        <td class="px-6 py-4 whitespace-normal text-gray-300">Requiere una gestión más activa de las políticas de ciclo de vida para optimizar costos en escenarios de acceso variable.</td>
+                                        <td class="px-6 py-4 whitespace-normal text-gray-300">Menos granularidad en las clases de almacenamiento en frío en comparación con AWS, y un ecosistema de terceros ligeramente menos extenso que S3.</td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-800/60">
+                                        <td class="px-6 py-4 whitespace-nowrap font-medium text-white">Madurez y Ecosistema</td>
+                                        <td class="px-6 py-4 whitespace-normal text-gray-300">Considerado el pionero y líder del mercado. Amplísima compatibilidad con herramientas de terceros y una comunidad de desarrolladores muy grande.</td>
+                                        <td class="px-6 py-4 whitespace-normal text-gray-300">Un competidor muy fuerte y en rápido crecimiento. El ecosistema está madurando rápidamente y es la opción preferida en entornos empresariales híbridos.</td>
+                                        <td class="px-6 py-4 whitespace-normal text-gray-300">Extremadamente potente, especialmente en análisis de datos y IA/ML. Su popularidad está creciendo rápidamente en startups y empresas nativas digitales.</td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-800/60">
+                                        <td class="px-6 py-4 whitespace-nowrap font-medium text-white">Conclusión para StreamFlix</td>
+                                        <td class="px-6 py-4 whitespace-normal text-gray-300">AWS ofrece una solución ligeramente más sofisticada y automatizada para el caso del CGU gracias a Intelligent-Tiering y una mayor granularidad de clases de archivo.</td>
+                                        <td class="px-6 py-4 whitespace-normal text-gray-300">Azure ofrece una solución totalmente viable y muy competitiva en costos. La elección podría depender de la experiencia del equipo o de acuerdos comerciales con Microsoft.</td>
+                                        <td class="px-6 py-4 whitespace-normal text-gray-300">GCP presenta una alternativa muy fuerte con Autoclass y acceso instantáneo a archivos, lo que puede simplificar operaciones y ser una ventaja en ciertos escenarios de recuperación.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                         </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="bg-black border-t border-gray-800">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center text-gray-500">
+            <p>&copy; 2025 Caso de Estudio - Diseñado para fines educativos.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const revealButton = document.getElementById('revealButton');
+            const solutionSection = document.getElementById('solutionSection');
+            
+            revealButton.addEventListener('click', () => {
+                const isHidden = solutionSection.classList.contains('hidden');
+                if (isHidden) {
+                    solutionSection.classList.remove('hidden');
+                    setTimeout(() => {
+                        solutionSection.classList.remove('opacity-0', 'max-h-0');
+                        solutionSection.style.maxHeight = solutionSection.scrollHeight + "px";
+                    }, 10);
+                    revealButton.textContent = "Ocultar Propuesta de Solución";
+                } else {
+                    solutionSection.style.maxHeight = "0px";
+                    solutionSection.classList.add('opacity-0');
+                    setTimeout(() => {
+                         solutionSection.classList.add('hidden');
+                    }, 500);
+                    revealButton.textContent = "Revelar Propuesta de Solución";
+                }
+            });
+
+            const tabs = document.querySelectorAll('.tab-button');
+            const contents = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(item => item.classList.remove('active'));
+                    contents.forEach(content => content.classList.add('hidden'));
+                    tab.classList.add('active');
+                    const contentId = tab.id.replace('tab-', 'content-');
+                    document.getElementById(contentId).classList.remove('hidden');
+                });
+            });
+
+            // Smooth scroll adjustment for sticky nav
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    let targetId = this.getAttribute('href');
+                    let targetElement = document.querySelector(targetId);
+                    if(targetElement) {
+                        let headerOffset = document.querySelector('.sticky-nav').offsetHeight;
+                        let elementPosition = targetElement.getBoundingClientRect().top;
+                        let offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+              
+                        window.scrollTo({
+                             top: offsetPosition,
+                             behavior: "smooth"
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía Definitiva de Políticas JSON en AWS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <!-- Chosen Palette: Indigo & Slate -->
+    <!-- Application Structure Plan: The page is structured as a long-form educational guide. It starts with an interactive policy explorer, which is the centerpiece. Users can click on policy elements to see detailed explanations appear in a separate pane. This is followed by a tabbed section for multiple real-world policy examples, allowing users to explore different use cases without cluttering the UI. The structure is designed to guide the user from foundational knowledge (anatomy) to practical application (examples), reinforcing learning effectively. -->
+    <!-- Visualization & Content Choices: The core interactive element is the "Policy Explorer". JSON policies are presented in pre-formatted blocks with syntax highlighting simulated via colored spans. JavaScript is used to make parts of the JSON clickable, updating a dedicated "explanation" area. This direct manipulation makes learning the abstract concepts of policy language more tangible and engaging. Copy-to-clipboard buttons are provided for all code examples for practical utility. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        pre, code {
+            font-family: 'Fira Code', monospace;
+        }
+        .policy-key {
+            cursor: pointer;
+            transition: background-color 0.2s;
+            border-radius: 4px;
+        }
+        .policy-key:hover, .policy-key.active {
+            background-color: #4338ca;
+            color: white;
+        }
+        .explanation-card {
+            transition: all 0.3s ease-in-out;
+            min-height: 450px;
+        }
+        .tab-button.active {
+            border-color: #4f46e5;
+            color: #4f46e5;
+            background-color: #eef2ff;
+        }
+        .analogy-box {
+            background-color: #fefce8; /* yellow-50 */
+            border-left: 4px solid #facc15; /* yellow-400 */
+        }
+        .key-point-box {
+            background-color: #fce7f3; /* pink-50 */
+            border-left: 4px solid #ec4899; /* pink-500 */
+        }
+    </style>
+</head>
+<body class="text-slate-900">
+
+    <div class="container mx-auto px-4 py-12">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-indigo-800">Guía Definitiva de Políticas JSON en AWS</h1>
+            <p class="mt-4 text-lg text-slate-600 max-w-3xl mx-auto">Aprende a leer, entender y escribir las reglas de seguridad que protegen tus recursos en la nube.</p>
+        </header>
+
+        <main>
+            <!-- Interactive Explorer Section -->
+            <section id="explorer" class="mb-20">
+                <h2 class="text-3xl font-bold mb-6 text-slate-800 border-b pb-4">Anatomía de una Política</h2>
+                <div class="flex flex-col lg:flex-row gap-8">
+                    <!-- Policy Code -->
+                    <div class="lg:w-1/2 bg-slate-800 text-white p-6 rounded-xl shadow-2xl">
+                        <h3 class="text-lg font-semibold mb-4 text-slate-300">Explorador Interactivo</h3>
+                        <p class="text-sm text-slate-400 mb-4">Haz clic en cualquier clave (resaltada) para ver su explicación detallada.</p>
+                        <pre class="text-sm leading-relaxed"><code>{
+  "<span class="policy-key p-1 text-sky-300" data-key="Version">"Version"</span>": "2012-10-17",
+  "<span class="policy-key p-1 text-sky-300" data-key="Statement">"Statement"</span>": [
+    {
+      "<span class="policy-key p-1 text-sky-300" data-key="Sid">"Sid"</span>": "AllowPublicReadForWeb",
+      "<span class="policy-key p-1 text-sky-300" data-key="Effect">"Effect"</span>": "Allow",
+      "<span class="policy-key p-1 text-sky-300" data-key="Principal">"Principal"</span>": "*",
+      "<span class="policy-key p-1 text-sky-300" data-key="Action">"Action"</span>": "s3:GetObject",
+      "<span class="policy-key p-1 text-sky-300" data-key="Resource">"Resource"</span>": "arn:aws:s3:::mi-bucket/*",
+      "<span class="policy-key p-1 text-sky-300" data-key="Condition">"Condition"</span>": { ... }
+    }
+  ]
+}</code></pre>
+                    </div>
+                    <!-- Explanation Card -->
+                    <div id="explanation-box" class="lg:w-1/2 explanation-card bg-white p-6 rounded-xl shadow-2xl border border-slate-200">
+                        <div id="explanation-content">
+                            <h3 class="text-2xl font-bold text-indigo-700 animate-pulse">Haz clic para explorar</h3>
+                            <p class="mt-2 text-slate-500">Selecciona un elemento de la política de la izquierda para ver una descripción profunda y detallada aquí.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Examples Section -->
+            <section id="examples" class="mb-16">
+                <h2 class="text-3xl font-bold mb-6 text-slate-800 border-b pb-4">Biblioteca de Ejemplos Prácticos</h2>
+                <div class="mb-6 border-b border-slate-200">
+                    <nav class="flex flex-wrap -mb-px" aria-label="Tabs">
+                        <button class="tab-button active whitespace-nowrap py-3 px-4 border-b-2 font-medium text-sm rounded-t-lg" data-target="ex1">Lectura Pública</button>
+                        <button class="tab-button whitespace-nowrap py-3 px-4 border-b-2 font-medium text-sm rounded-t-lg" data-target="ex2">Permitir Carga</button>
+                        <button class="tab-button whitespace-nowrap py-3 px-4 border-b-2 font-medium text-sm rounded-t-lg" data-target="ex3">Denegar por IP</button>
+                        <button class="tab-button whitespace-nowrap py-3 px-4 border-b-2 font-medium text-sm rounded-t-lg" data-target="ex4">Acceso a "Carpeta"</button>
+                        <button class="tab-button whitespace-nowrap py-3 px-4 border-b-2 font-medium text-sm rounded-t-lg" data-target="ex5">Forzar MFA</button>
+                    </nav>
+                </div>
+                <div id="examples-content">
+                    <div class="tab-content bg-white p-6 rounded-lg shadow-md" id="ex1">
+                        <h3 class="text-xl font-semibold mb-2">Ejemplo 1: Permitir Lectura Pública para un Sitio Web Estático</h3>
+                        <p class="text-slate-600 mb-4">Permite que cualquier persona en internet pueda leer (pero no modificar) los objetos del bucket. Es la política base para alojar un sitio web en S3.</p>
+                        <div class="relative bg-slate-800 text-white p-4 rounded-xl shadow-lg mt-4">
+                            <button class="copy-btn absolute top-3 right-3 bg-slate-600 hover:bg-slate-500 text-white text-xs font-bold py-1 px-2 rounded"><i class="fas fa-copy"></i> Copiar</button>
+                            <pre><code class="language-json">{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "PublicReadGetObject",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::NOMBRE_DE_TU_BUCKET/*"
+        }
+    ]
+}</code></pre>
+                        </div>
+                        <div class="mt-4 border-t pt-4">
+                            <h4 class="font-semibold text-indigo-700">Desglose:</h4>
+                            <ul class="list-disc list-inside text-sm text-slate-600 mt-2 space-y-1">
+                                <li><strong>Principal: `*`</strong> - Se usa el comodín porque CUALQUIERA en internet (anónimo) necesita poder ver los archivos del sitio web.</li>
+                                <li><strong>Action: `s3:GetObject`</strong> - Se concede únicamente el permiso para leer/descargar. No se permite `s3:PutObject` (escribir) ni `s3:DeleteObject` (borrar), siguiendo el principio de menor privilegio.</li>
+                                <li><strong>Resource: `.../*`</strong> - El permiso aplica a TODOS los objetos (`*`) dentro del bucket especificado.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="tab-content hidden bg-white p-6 rounded-lg shadow-md" id="ex2">
+                        <h3 class="text-xl font-semibold mb-2">Ejemplo 2: Permitir a un Usuario de IAM Específico Subir Archivos</h3>
+                        <p class="text-slate-600 mb-4">Otorga permisos de escritura (`s3:PutObject`) a un único usuario de IAM. Ideal para dar acceso a un desarrollador o a un servicio automatizado sin exponer el bucket.</p>
+                        <div class="relative bg-slate-800 text-white p-4 rounded-xl shadow-lg mt-4">
+                             <button class="copy-btn absolute top-3 right-3 bg-slate-600 hover:bg-slate-500 text-white text-xs font-bold py-1 px-2 rounded"><i class="fas fa-copy"></i> Copiar</button>
+                            <pre><code class="language-json">{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AllowUserToUpload",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::123456789012:user/nombre-de-usuario"
+            },
+            "Action": "s3:PutObject",
+            "Resource": "arn:aws:s3:::NOMBRE_DE_TU_BUCKET/*"
+        }
+    ]
+}</code></pre>
+                        </div>
+                         <div class="mt-4 border-t pt-4">
+                            <h4 class="font-semibold text-indigo-700">Desglose:</h4>
+                            <ul class="list-disc list-inside text-sm text-slate-600 mt-2 space-y-1">
+                                <li><strong>Principal: `{ "AWS": "..." }`</strong> - En lugar de `*`, especificamos el ARN completo del usuario de IAM. Esto asegura que solo esa identidad pueda realizar la acción.</li>
+                                <li><strong>Action: `s3:PutObject`</strong> - Se concede el permiso para crear o sobrescribir objetos.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="tab-content hidden bg-white p-6 rounded-lg shadow-md" id="ex3">
+                        <h3 class="text-xl font-semibold mb-2">Ejemplo 3: Denegar el Acceso Excepto desde una IP Específica</h3>
+                        <p class="text-slate-600 mb-4">Política de seguridad muy potente. Usa un `Deny` explícito para bloquear todo el acceso a menos que la solicitud provenga de la IP de la oficina o VPN.</p>
+                         <div class="relative bg-slate-800 text-white p-4 rounded-xl shadow-lg mt-4">
+                            <button class="copy-btn absolute top-3 right-3 bg-slate-600 hover:bg-slate-500 text-white text-xs font-bold py-1 px-2 rounded"><i class="fas fa-copy"></i> Copiar</button>
+                            <pre><code class="language-json">{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "DenyAccessIfNotFromSpecificIP",
+            "Effect": "Deny",
+            "Principal": "*",
+            "Action": "s3:*",
+            "Resource": "arn:aws:s3:::NOMBRE_DE_TU_BUCKET/*",
+            "Condition": {
+                "NotIpAddress": {
+                    "aws:SourceIp": "203.0.113.10/32"
+                }
+            }
+        }
+    ]
+}</code></pre>
+                        </div>
+                         <div class="mt-4 border-t pt-4">
+                            <h4 class="font-semibold text-indigo-700">Desglose:</h4>
+                            <ul class="list-disc list-inside text-sm text-slate-600 mt-2 space-y-1">
+                                <li><strong>Effect: `Deny`</strong> - Usamos `Deny` para que esta regla tenga prioridad sobre cualquier `Allow` que pueda existir en otras políticas.</li>
+                                <li><strong>Action: `s3:*`</strong> - Aplicamos la denegación a TODAS las acciones de S3 para máxima seguridad.</li>
+                                <li><strong>Condition: `{ "NotIpAddress": ... }`</strong> - Aquí está la magia. La condición dice: "Aplica esta denegación SI la IP de origen NO ES (`NotIpAddress`) la especificada".</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="tab-content hidden bg-white p-6 rounded-lg shadow-md" id="ex4">
+                        <h3 class="text-xl font-semibold mb-2">Ejemplo 4: Permitir Acceso de Lectura a una "Carpeta" Específica</h3>
+                        <p class="text-slate-600 mb-4">Otorga acceso de solo lectura a todos los objetos que comiencen con el prefijo `reportes/`. Útil para compartir un subconjunto de datos.</p>
+                         <div class="relative bg-slate-800 text-white p-4 rounded-xl shadow-lg mt-4">
+                             <button class="copy-btn absolute top-3 right-3 bg-slate-600 hover:bg-slate-500 text-white text-xs font-bold py-1 px-2 rounded"><i class="fas fa-copy"></i> Copiar</button>
+                            <pre><code class="language-json">{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AllowReadAccessToReportsFolder",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::123456789012:user/analista-de-datos"
+            },
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::NOMBRE_DE_TU_BUCKET/reportes/*"
+        }
+    ]
+}</code></pre>
+                        </div>
+                         <div class="mt-4 border-t pt-4">
+                            <h4 class="font-semibold text-indigo-700">Desglose:</h4>
+                            <ul class="list-disc list-inside text-sm text-slate-600 mt-2 space-y-1">
+                                <li><strong>Resource: `.../reportes/*`</strong> - El ARN del recurso es más específico. No solo apunta al bucket, sino a todos los objetos (`*`) que están bajo el prefijo `reportes/`.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="tab-content hidden bg-white p-6 rounded-lg shadow-md" id="ex5">
+                        <h3 class="text-xl font-semibold mb-2">Ejemplo 5 (Avanzado): Forzar MFA para Eliminar Objetos</h3>
+                        <p class="text-slate-600 mb-4">Deniega explícitamente la eliminación (`s3:DeleteObject`) a menos que el usuario se haya autenticado con Autenticación Multifactor (MFA).</p>
+                         <div class="relative bg-slate-800 text-white p-4 rounded-xl shadow-lg mt-4">
+                            <button class="copy-btn absolute top-3 right-3 bg-slate-600 hover:bg-slate-500 text-white text-xs font-bold py-1 px-2 rounded"><i class="fas fa-copy"></i> Copiar</button>
+                            <pre><code class="language-json">{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "DenyDeleteUnlessMFA",
+            "Effect": "Deny",
+            "Principal": "*",
+            "Action": "s3:DeleteObject",
+            "Resource": "arn:aws:s3:::NOMBRE_DE_TU_BUCKET/*",
+            "Condition": {
+                "BoolIfExists": {
+                    "aws:MultiFactorAuthPresent": "false"
+                }
+            }
+        }
+    ]
+}</code></pre>
+                        </div>
+                        <div class="mt-4 border-t pt-4">
+                            <h4 class="font-semibold text-indigo-700">Desglose:</h4>
+                            <ul class="list-disc list-inside text-sm text-slate-600 mt-2 space-y-1">
+                                <li><strong>Effect: `Deny`</strong> - De nuevo, usamos `Deny` por su prioridad.</li>
+                                <li><strong>Action: `s3:DeleteObject`</strong> - La regla se enfoca específicamente en la acción destructiva de borrar.</li>
+                                <li><strong>Condition: `{ "BoolIfExists": ... }`</strong> - La condición se activa si la clave `aws:MultiFactorAuthPresent` es `false` (o no existe). Esto fuerza a que la autenticación con MFA sea obligatoria para que esta denegación no se aplique.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        const explanations = {
+            Version: {
+                title: 'Version',
+                content: `
+                    <h4 class="font-semibold text-slate-700">¿Qué es?</h4>
+                    <p class="text-slate-600 text-sm mb-4">Especifica la versión del lenguaje de la política que AWS debe usar para procesar la regla. Es como decirle a un programa qué versión de un archivo de configuración está leyendo.</p>
+                    
+                    <h4 class="font-semibold text-slate-700">Valores Posibles</h4>
+                    <ul class="list-disc list-inside text-sm text-slate-600 mb-4">
+                        <li><strong>"2012-10-17":</strong> Es la versión actual y la que siempre deberías usar. Incluye todas las características modernas como las variables de política.</li>
+                        <li><strong>"2008-10-17":</strong> Una versión anterior y obsoleta. No se recomienda su uso.</li>
+                    </ul>
+
+                    <div class="analogy-box p-3 rounded-md mt-4">
+                        <p class="text-sm font-semibold text-yellow-800"><i class="fas fa-lightbulb mr-2"></i>Analogía del Mundo Real</p>
+                        <p class="text-sm text-yellow-700">Piensa en ello como la versión de un sistema operativo en un documento. Si escribes un documento para "Windows 11", le estás diciendo al lector que espere ciertas características. "Version" hace lo mismo para AWS.</p>
+                    </div>`
+            },
+            Statement: {
+                title: 'Statement',
+                content: `
+                    <h4 class="font-semibold text-slate-700">¿Qué es?</h4>
+                    <p class="text-slate-600 text-sm mb-4">Es el contenedor principal de una política. Es una lista (array) que contiene una o más declaraciones (reglas) de permisos individuales. Toda la lógica de la política reside dentro de este bloque.</p>
+                    
+                    <h4 class="font-semibold text-slate-700">Explicación Detallada</h4>
+                    <p class="text-slate-600 text-sm mb-4">Una política puede ser simple, con un solo \`Statement\`, o muy compleja, con una lista de varios \`Statements\`. Cada \`Statement\` en la lista se evalúa de forma independiente.</p>
+
+                    <div class="key-point-box p-3 rounded-md mt-4">
+                         <p class="text-sm font-semibold text-pink-800"><i class="fas fa-key mr-2"></i>¡Punto Clave!</p>
+                        <p class="text-sm text-pink-700">El \`Statement\` es un array (indicado por los corchetes <strong>\`[ ... ]\`</strong>), lo que significa que puedes agrupar múltiples reglas lógicas en una sola política.</p>
+                    </div>`
+            },
+            Sid: {
+                title: 'Sid (Statement ID)',
+                content: `
+                    <h4 class="font-semibold text-slate-700">¿Qué es?</h4>
+                    <p class="text-slate-600 text-sm mb-4">Es un identificador opcional pero muy recomendado para cada \`Statement\`. Es simplemente una etiqueta de texto que tú defines.</p>
+                    
+                    <h4 class="font-semibold text-slate-700">Explicación Detallada</h4>
+                    <p class="text-slate-600 text-sm mb-4">El \`Sid\` no tiene ningún efecto sobre los permisos; su único propósito es hacer la política más legible y fácil de gestionar. Cuando tienes una política con 10 \`Statements\`, un \`Sid\` descriptivo como "AllowBillingAccess" o "DenyAccessFromOutsideVPC" es increíblemente útil para la depuración y auditoría.</p>
+
+                    <div class="analogy-box p-3 rounded-md mt-4">
+                        <p class="text-sm font-semibold text-yellow-800"><i class="fas fa-lightbulb mr-2"></i>Analogía del Mundo Real</p>
+                        <p class="text-sm text-yellow-700">Es como ponerle un nombre a un párrafo en un contrato legal. El nombre no cambia el significado del párrafo, pero te ayuda a encontrarlo y referenciarlo rápidamente.</p>
+                    </div>`
+            },
+            Effect: {
+                title: 'Effect (Efecto)',
+                content: `
+                    <h4 class="font-semibold text-slate-700">¿Qué es?</h4>
+                    <p class="text-slate-600 text-sm mb-4">El corazón de la regla. Determina si la declaración permite o deniega el acceso.</p>
+                    
+                    <h4 class="font-semibold text-slate-700">Valores Posibles y Explicación</h4>
+                    <ul class="list-disc list-inside text-sm text-slate-600 mb-4">
+                        <li><strong>"Allow" (Permitir):</strong> Otorga explícitamente los permisos definidos en \`Action\` y \`Resource\`.</li>
+                        <li><strong>"Deny" (Denegar):</strong> Prohíbe explícitamente los permisos. Esta es la opción más poderosa.</li>
+                    </ul>
+
+                    <div class="key-point-box p-3 rounded-md mt-4">
+                        <p class="text-sm font-semibold text-pink-800"><i class="fas fa-key mr-2"></i>¡Punto Clave!</p>
+                        <p class="text-sm text-pink-700">La regla más importante de la seguridad en AWS: <strong>un \`Deny\` explícito siempre anula cualquier \`Allow\`</strong>. Si un usuario tiene una política que le permite el acceso (\`Allow\`) y otra que se lo deniega (\`Deny\`), el acceso será denegado.</p>
+                    </div>`
+            },
+            Principal: {
+                title: 'Principal (Entidad)',
+                content: `
+                    <h4 class="font-semibold text-slate-700">¿Qué es?</h4>
+                    <p class="text-slate-600 text-sm mb-4">Define <strong>quién</strong> (qué usuario, servicio o cuenta) está afectado por la política. Solo se usa en políticas basadas en recursos (como las de un bucket de S3).</p>
+
+                    <h4 class="font-semibold text-slate-700">Valores Posibles y Explicación</h4>
+                    <ul class="list-disc list-inside text-sm text-slate-600 mb-4">
+                        <li><strong>\`"*"\`:</strong> Un comodín que significa "cualquier persona" o "anónimo". Se usa para acceso público.</li>
+                        <li><strong>\`{ "AWS": "ARN_COMPLETO" }\`:</strong> El método más común. Especifica una cuenta de AWS (\`arn:aws:iam::123456789012:root\`), un usuario de IAM (\`...:user/nombre\`), o un rol de IAM (\`...:role/nombre\`).</li>
+                        <li><strong>\`{ "Service": "nombre.del.servicio" }\`:</strong> Permite que un servicio de AWS (ej: \`logging.s3.amazonaws.com\`) actúe sobre el recurso.</li>
+                    </ul>
+
+                    <div class="analogy-box p-3 rounded-md mt-4">
+                        <p class="text-sm font-semibold text-yellow-800"><i class="fas fa-lightbulb mr-2"></i>Analogía del Mundo Real</p>
+                        <p class="text-sm text-yellow-700">Piensa en el \`Principal\` como el campo "Para:" en un pase de acceso. Define quién puede usar ese pase.</p>
+                    </div>`
+            },
+            Action: {
+                title: 'Action (Acción)',
+                content: `
+                    <h4 class="font-semibold text-slate-700">¿Qué es?</h4>
+                    <p class="text-slate-600 text-sm mb-4">Define <strong>qué operación u operaciones</strong> se están permitiendo o denegando. Son específicas para cada servicio de AWS.</p>
+
+                    <h4 class="font-semibold text-slate-700">Formato y Ejemplos</h4>
+                     <ul class="list-disc list-inside text-sm text-slate-600 mb-4">
+                        <li>El formato es siempre <code>servicio:Operacion</code>.</li>
+                        <li><strong>Ejemplos de S3:</strong> \`s3:GetObject\`, \`s3:PutObject\`, \`s3:ListBucket\`.</li>
+                        <li><strong>Ejemplos de EC2:</strong> \`ec2:StartInstances\`, \`ec2:StopInstances\`.</li>
+                        <li>Se pueden usar comodines: \`s3:Get*\` permitiría \`GetObject\`, \`GetObjectAcl\`, etc. Usar \`*\` solo (ej: \`s3:*\`) es muy permisivo y debe evitarse.</li>
+                    </ul>
+
+                     <div class="key-point-box p-3 rounded-md mt-4">
+                         <p class="text-sm font-semibold text-pink-800"><i class="fas fa-key mr-2"></i>¡Punto Clave!</p>
+                        <p class="text-sm text-pink-700">Sigue siempre el <strong>Principio de Menor Privilegio</strong>. Otorga solo las acciones mínimas necesarias. Nunca des \`s3:*\` si solo necesitas \`s3:GetObject\`.</p>
+                    </div>`
+            },
+            Resource: {
+                title: 'Resource (Recurso)',
+                content: `
+                     <h4 class="font-semibold text-slate-700">¿Qué es?</h4>
+                    <p class="text-slate-600 text-sm mb-4">Especifica <strong>sobre qué objeto u objetos</strong> de AWS se aplica la política.</p>
+
+                    <h4 class="font-semibold text-slate-700">Formato y Explicación</h4>
+                    <p class="text-slate-600 text-sm mb-4">Los recursos se identifican mediante su <strong>ARN (Amazon Resource Name)</strong>, que es un identificador único global para cada recurso en AWS.</p>
+                    <ul class="list-disc list-inside text-sm text-slate-600 mb-4">
+                        <li><strong>ARN de un Bucket:</strong> \`arn:aws:s3:::nombre-del-bucket\`</li>
+                        <li><strong>ARN de los Objetos en un Bucket:</strong> \`arn:aws:s3:::nombre-del-bucket/*\` (El \`/*\` es un comodín para "todos los objetos dentro").</li>
+                        <li><strong>ARN de un Usuario IAM:</strong> \`arn:aws:iam::123456789012:user/nombre-usuario\`</li>
+                    </ul>
+
+                     <div class="analogy-box p-3 rounded-md mt-4">
+                        <p class="text-sm font-semibold text-yellow-800"><i class="fas fa-lightbulb mr-2"></i>Analogía del Mundo Real</p>
+                        <p class="text-sm text-yellow-700">Si la \`Action\` es "qué se puede hacer", el \`Resource\` es la dirección de "dónde se puede hacer".</p>
+                    </div>`
+            },
+            Condition: {
+                title: 'Condition (Condición)',
+                content: `
+                    <h4 class="font-semibold text-slate-700">¿Qué es?</h4>
+                    <p class="text-slate-600 text-sm mb-4">Un bloque opcional y avanzado que permite especificar <strong>cuándo</strong> una política es válida. Es la "letra pequeña" de la regla.</p>
+
+                    <h4 class="font-semibold text-slate-700">Explicación y Operadores Comunes</h4>
+                    <p class="text-slate-600 text-sm mb-4">El bloque \`Condition\` contiene operadores que comparan claves de contexto de la solicitud con valores que tú especificas. Es extremadamente poderoso para el control de acceso granular.</p>
+                     <ul class="list-disc list-inside text-sm text-slate-600 mb-4">
+                        <li><strong>\`IpAddress\` / \`NotIpAddress\`:</strong> Para restringir por IP de origen. (Ej: \`{"aws:SourceIp": "203.0.113.0/24"}\`)</li>
+                        <li><strong>\`StringEquals\` / \`StringLike\`:</strong> Para comparar valores de texto, como etiquetas.</li>
+                        <li><strong>\`Bool\`:</strong> Para claves booleanas. (Ej: \`{"aws:MultiFactorAuthPresent": "true"}\`)</li>
+                    </ul>
+                    
+                     <div class="key-point-box p-3 rounded-md mt-4">
+                         <p class="text-sm font-semibold text-pink-800"><i class="fas fa-key mr-2"></i>¡Punto Clave!</p>
+                        <p class="text-sm text-pink-700">Las \`Conditions\` te permiten implementar políticas de seguridad muy específicas que no serían posibles solo con \`Principal\`, \`Action\` y \`Resource\`.</p>
+                    </div>`
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const policyKeys = document.querySelectorAll('.policy-key');
+            const explanationBox = document.getElementById('explanation-box');
+            const explanationContent = document.getElementById('explanation-content');
+            
+            policyKeys.forEach(key => {
+                key.addEventListener('click', () => {
+                    const keyName = key.dataset.key;
+                    const data = explanations[keyName];
+
+                    policyKeys.forEach(k => k.classList.remove('active'));
+                    key.classList.add('active');
+                    
+                    explanationContent.innerHTML = `
+                        <h3 class="text-2xl font-bold text-indigo-700 mb-4">${data.title}</h3>
+                        ${data.content}
+                    `;
+                });
+            });
+
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetId = button.dataset.target;
+                    
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+
+                    tabContents.forEach(content => {
+                        content.classList.toggle('hidden', content.id !== targetId);
+                    });
+                });
+            });
+
+            const copyButtons = document.querySelectorAll('.copy-btn');
+            copyButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const pre = button.nextElementSibling;
+                    const code = pre.querySelector('code').innerText;
+                    navigator.clipboard.writeText(code).then(() => {
+                        const originalText = button.innerHTML;
+                        button.innerHTML = '<i class="fas fa-check"></i> Copiado';
+                        setTimeout(() => {
+                           button.innerHTML = originalText;
+                        }, 2000);
+                    });
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>
+

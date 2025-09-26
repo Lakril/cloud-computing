@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introducción a Amazon S3</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutral & Slate -->
+    <!-- Application Structure Plan: La estructura se ha rediseñado con 4 pestañas que se corresponden con las 4 partes del informe exhaustivo: 1) El Paradigma del Almacenamiento, 2) Análisis Profundo de S3, 3) S3 en la Práctica, y 4) Benchmark Competitivo. Esta estructura segmentada es crucial para gestionar la alta densidad de información del nuevo informe. Cada pestaña contiene múltiples tarjetas de contenido que desglosan los conceptos complejos, tablas y análisis estratégicos, permitiendo al estudiante digerir el material de forma secuencial y lógica, tal como lo haría en una clase universitaria, sin sentirse abrumado. -->
+    <!-- Visualization & Content Choices: Se ha eliminado el gráfico de barras anterior por ser demasiado simplista para el nuevo contenido. En su lugar, se han implementado 5 tablas HTML detalladas (Tabla 1 a 5 del informe) que presentan comparaciones precisas de arquitecturas, SLAs, seguridad, características y precios. Esta elección refleja la naturaleza académica y basada en datos del informe. Las interacciones se centran en la navegación por pestañas y el desglose de contenido en tarjetas temáticas, priorizando la claridad y la profundidad sobre la interactividad visual compleja, lo cual es más apropiado para este tipo de material de estudio denso. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #F8F9FA;
+            color: #212529;
+        }
+        h1, h2, h3, h4 {
+            font-family: 'Poppins', sans-serif;
+        }
+        .tab-active {
+            border-color: #0d6efd;
+            color: #0d6efd;
+            font-weight: 600;
+        }
+        .tab-inactive {
+            border-color: transparent;
+            color: #6c757d;
+        }
+        .content-card {
+            background-color: #FFFFFF;
+            border-radius: 0.75rem;
+            border: 1px solid #dee2e6;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07);
+        }
+        .key-concept {
+            background-color: #e9ecef;
+            border-left: 4px solid #0d6efd;
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <div class="container mx-auto px-4 py-8 lg:px-8">
+
+        <header class="text-center mb-10">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-800">Introducción a Amazon S3</h1>
+            <p class="mt-3 text-lg text-gray-600">Un análisis profundo del almacenamiento de objetos para arquitectos de la nube.</p>
+        </header>
+
+        <nav class="mb-8 border-b border-gray-200 sticky top-0 bg-white/80 backdrop-blur-sm z-10">
+            <ul class="flex flex-wrap -mb-px text-sm font-medium text-center">
+                <li class="mr-2">
+                    <button class="inline-block p-4 border-b-2 rounded-t-lg tab-active" data-tab="part1">Parte 1: El Paradigma del Almacenamiento</button>
+                </li>
+                <li class="mr-2">
+                    <button class="inline-block p-4 border-b-2 rounded-t-lg tab-inactive" data-tab="part2">Parte 2: Análisis Profundo de S3</button>
+                </li>
+                <li class="mr-2">
+                    <button class="inline-block p-4 border-b-2 rounded-t-lg tab-inactive" data-tab="part3">Parte 3: S3 en la Práctica</button>
+                </li>
+                <li>
+                    <button class="inline-block p-4 border-b-2 rounded-t-lg tab-inactive" data-tab="part4">Parte 4: Benchmark Competitivo</button>
+                </li>
+            </ul>
+        </nav>
+
+        <main>
+            <div id="part1" class="space-y-8 tab-content">
+                <div class="content-card p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-gray-800">Deconstruyendo el Almacenamiento de Datos</h2>
+                    <p class="mb-4 text-gray-700">La elección de una arquitectura de almacenamiento no se trata de encontrar la "mejor" opción, sino de gestionar un conjunto de compromisos entre rendimiento, escalabilidad, costo y estructura de datos. Cada modelo optimiza para un conjunto diferente de requisitos.</p>
+                    <div class="space-y-6">
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2">Almacenamiento de Ficheros (File Storage)</h3>
+                            <p>Análogo a un sistema de archivadores jerárquico. Los datos se organizan en ficheros y carpetas, creando una estructura rígida en forma de árbol. Este modelo es intuitivo, pero se convierte en un cuello de botella a gran escala. Sacrifica la escala masiva en favor de una jerarquía legible para el ser humano.</p>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2">Almacenamiento de Bloques (Block Storage)</h3>
+                            <p>Puede ser visto como el almacenamiento de volúmenes de datos en bruto, similar a un disco duro. Los datos se dividen en bloques de tamaño fijo. Ofrece un rendimiento extremadamente alto (baja latencia y altos IOPS) y es ideal para bases de datos transaccionales. Intercambia la escalabilidad y los metadatos enriquecidos por una velocidad sin procesar.</p>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2">Almacenamiento de Objetos (Object Storage)</h3>
+                            <p>El paradigma para los datos a escala de nube. Los datos se almacenan como "objetos" en un espacio de direcciones plano. Cada objeto agrupa los datos, metadatos extensos y un identificador único global. Está diseñado para escalabilidad masiva y durabilidad. Una limitación clave es que los objetos son inmutables; deben reescribirse por completo. Sacrifica la capacidad de modificación en el lugar por una escalabilidad casi infinita.</p>
+                        </div>
+                    </div>
+                     <div class="mt-6 p-4 key-concept rounded-md">
+                        <h4 class="font-bold text-lg mb-2">La Innovación Clave: Los Metadatos</h4>
+                        <p class="text-gray-800">Una de las innovaciones más significativas del almacenamiento de objetos es la elevación de los metadatos a un componente central y consultable. Permite etiquetar un objeto con información relevante para el negocio (ID de proyecto, nivel de sensibilidad, etc.), transformando el sistema de almacenamiento de un simple contenedor a un repositorio consultable y analizable. Los metadatos en sí mismos se convierten en un activo valioso.</p>
+                    </div>
+                </div>
+
+                <div class="content-card p-6">
+                    <h3 class="text-2xl font-bold mb-4 text-gray-800">Tabla 1: Comparación de Arquitecturas de Almacenamiento</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3">Característica</th>
+                                    <th class="px-6 py-3">Almacenamiento de Objetos</th>
+                                    <th class="px-6 py-3">Almacenamiento de Bloques</th>
+                                    <th class="px-6 py-3">Almacenamiento de Ficheros</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="bg-white border-b"><td class="px-6 py-4 font-semibold">Estructura</td><td class="px-6 py-4">Espacio de nombres plano ("pool")</td><td class="px-6 py-4">Bloques en volúmenes</td><td class="px-6 py-4">Carpetas jerárquicas</td></tr>
+                                <tr class="bg-gray-50 border-b"><td class="px-6 py-4 font-semibold">Unidad de Datos</td><td class="px-6 py-4">Objeto (datos + metadatos + ID)</td><td class="px-6 py-4">Bloque</td><td class="px-6 py-4">Fichero</td></tr>
+                                <tr class="bg-white border-b"><td class="px-6 py-4 font-semibold">Metadatos</td><td class="px-6 py-4">Ricos, extensos y personalizables</td><td class="px-6 py-4">Básicos/mínimos</td><td class="px-6 py-4">Limitados, estructurados</td></tr>
+                                <tr class="bg-gray-50 border-b"><td class="px-6 py-4 font-semibold">Protocolo de Acceso</td><td class="px-6 py-4">HTTP/API (REST)</td><td class="px-6 py-4">SCSI, iSCSI</td><td class="px-6 py-4">SMB, NFS</td></tr>
+                                <tr class="bg-white border-b"><td class="px-6 py-4 font-semibold">Perfil de Rendimiento</td><td class="px-6 py-4">Alto rendimiento sostenido, mayor latencia</td><td class="px-6 py-4">Baja latencia, altos IOPS</td><td class="px-6 py-4">Intuitivo, más lento a gran escala</td></tr>
+                                <tr class="bg-gray-50 border-b"><td class="px-6 py-4 font-semibold">Escalabilidad</td><td class="px-6 py-4">Prácticamente infinita</td><td class="px-6 py-4">Limitada por el tamaño del volumen</td><td class="px-6 py-4">Limitada por la jerarquía</td></tr>
+                                <tr class="bg-white"><td class="px-6 py-4 font-semibold">Casos de Uso Ideales</td><td class="px-6 py-4">Datos no estructurados, backups, lagos de datos, contenido web</td><td class="px-6 py-4">Bases de datos, sistemas de ficheros de VM</td><td class="px-6 py-4">Ficheros compartidos, colaboración</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="content-card p-6">
+                    <h2 class="text-3xl font-bold mb-4 text-gray-800">La Importancia Estratégica en la Nube</h2>
+                    <p class="text-gray-700">El almacenamiento de objetos es una capa fundamental que habilita la arquitectura de las aplicaciones nativas de la nube modernas. Su modelo de acceso impulsado por API se adapta perfectamente a aplicaciones distribuidas y microservicios, permitiendo el acceso a datos desde cualquier lugar sin necesidad de montar un sistema de ficheros compartido. Económicamente, su modelo de pago por uso lo hace asequible para vastos conjuntos de datos, convirtiéndose en la base para data lakes, big data y aplicaciones serverless.</p>
+                </div>
+            </div>
+
+            <div id="part2" class="space-y-8 tab-content hidden">
+                <div class="content-card p-6">
+                    <h2 class="text-3xl font-bold mb-4">Los Bloques de Construcción: Buckets y Objetos</h2>
+                    <div>
+                        <h3 class="text-xl font-semibold mb-2">Buckets</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li><strong>Nomenclatura Globalmente Única:</strong> Los nombres de los buckets deben ser únicos en todas las cuentas de AWS a nivel mundial.</li>
+                            <li><strong>Alcance Regional:</strong> Un bucket se crea y reside en una Región de AWS específica. Los datos no abandonan esa región a menos que se repliquen explícitamente.</li>
+                            <li><strong>Estructura Plana:</strong> El concepto de "carpeta" es una ilusión de la UI creada mediante prefijos en las claves de los objetos. No existe una jerarquía subyacente.</li>
+                        </ul>
+                    </div>
+                    <div class="mt-4">
+                        <h3 class="text-xl font-semibold mb-2">Objetos</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li><strong>Clave (Key):</strong> El identificador único para un objeto dentro de un bucket.</li>
+                            <li><strong>Datos (Data):</strong> El contenido real, de 0 bytes a 5 TB.</li>
+                            <li><strong>Metadatos (Metadata):</strong> Pares nombre-valor que describen el objeto (del sistema y definidos por el usuario).</li>
+                            <li><strong>ID de Versión (Version ID):</strong> Identificador único de una versión específica cuando el versionado está habilitado.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="content-card p-6">
+                    <h2 class="text-3xl font-bold mb-4">Los Pilares de S3: Durabilidad y Disponibilidad</h2>
+                    <p class="mb-4 text-gray-700">Es crucial entender la diferencia entre estas dos promesas operativas fundamentales de S3.</p>
+                    <div class="space-y-4">
+                        <div>
+                            <h3 class="text-xl font-semibold mb-1">Durabilidad (Integridad de los Datos)</h3>
+                            <p>Garantía contra la pérdida o corrupción de datos. S3 está diseñado para una durabilidad del <strong>99.999999999% (11 nueves)</strong>, replicando objetos en un mínimo de tres Zonas de Disponibilidad (AZs). Si almacena 10 millones de objetos, podría esperar perder uno cada 10,000 años.</p>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-1">Disponibilidad (Tiempo de Actividad del Sistema)</h3>
+                            <p>Porcentaje de tiempo que el servicio está operativo. AWS ofrece Acuerdos de Nivel de Servicio (SLAs) con respaldo financiero para la disponibilidad, que varían según la clase de almacenamiento (p. ej., 99.9% para S3 Standard).</p>
+                        </div>
+                    </div>
+                    <div class="mt-6 p-4 key-concept rounded-md">
+                        <h4 class="font-bold text-lg mb-2">Caso Real: Durabilidad vs. Disponibilidad</h4>
+                        <p class="text-gray-800">La interrupción de S3 en us-east-1 en 2017 es un ejemplo perfecto: el servicio no estuvo disponible durante horas (fallo de disponibilidad), pero no se perdieron datos de forma permanente (la durabilidad se mantuvo). <strong>La durabilidad protege los datos. La disponibilidad protege el acceso a los datos.</strong></p>
+                    </div>
+                </div>
+                
+                <div class="content-card p-6">
+                    <h3 class="text-2xl font-bold mb-4 text-gray-800">Tabla 2: SLAs y Características de las Clases de Almacenamiento</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left">
+                           <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3">Clase de Almacenamiento</th>
+                                    <th class="px-6 py-3">Diseñado Para</th>
+                                    <th class="px-6 py-3">Durabilidad</th>
+                                    <th class="px-6 py-3">SLA de Disponibilidad</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b"><td class="px-6 py-4 font-semibold">S3 Standard</td><td class="px-6 py-4">Datos de acceso frecuente</td><td class="px-6 py-4">99.999999999%</td><td class="px-6 py-4">99.9%</td></tr>
+                                <tr class="border-b bg-gray-50"><td class="px-6 py-4 font-semibold">S3 Intelligent-Tiering</td><td class="px-6 py-4">Patrones de acceso cambiantes</td><td class="px-6 py-4">99.999999999%</td><td class="px-6 py-4">99.0%</td></tr>
+                                <tr class="border-b"><td class="px-6 py-4 font-semibold">S3 Standard-IA</td><td class="px-6 py-4">Datos de acceso poco frecuente</td><td class="px-6 py-4">99.999999999%</td><td class="px-6 py-4">99.0%</td></tr>
+                                <tr class="border-b bg-gray-50"><td class="px-6 py-4 font-semibold">S3 One Zone-IA</td><td class="px-6 py-4">Datos recreables de acceso poco frecuente</td><td class="px-6 py-4">99.999999999%</td><td class="px-6 py-4">99.0%</td></tr>
+                                <tr class="border-b"><td class="px-6 py-4 font-semibold">S3 Glacier Instant Retrieval</td><td class="px-6 py-4">Archivos con acceso de milisegundos</td><td class="px-6 py-4">99.999999999%</td><td class="px-6 py-4">99.0%</td></tr>
+                                <tr class="border-b bg-gray-50"><td class="px-6 py-4 font-semibold">S3 Glacier Flexible Retrieval</td><td class="px-6 py-4">Archivos con recuperación de minutos a horas</td><td class="px-6 py-4">99.999999999%</td><td class="px-6 py-4">99.9%</td></tr>
+                                <tr><td class="px-6 py-4 font-semibold">S3 Glacier Deep Archive</td><td class="px-6 py-4">Archivos a largo plazo</td><td class="px-6 py-4">99.999999999%</td><td class="px-6 py-4">99.9%</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="content-card p-6">
+                    <h2 class="text-3xl font-bold mb-4">Asegurando el Perímetro: Control de Acceso</h2>
+                    <p class="mb-4 text-gray-700">La seguridad se gestiona a través de una jerarquía de controles. Una denegación explícita (Deny) siempre anula cualquier permiso (Allow).</p>
+                    <ul class="space-y-3 mb-6">
+                        <li><strong>Políticas de IAM (Basadas en Identidad):</strong> Adjuntas a usuarios/grupos/roles. Definen "qué puede hacer esta identidad". Preferidas para gestionar permisos dentro de la cuenta.</li>
+                        <li><strong>Políticas de Bucket (Basadas en Recursos):</strong> Adjuntas a un bucket. Responden "¿quién puede acceder a este bucket?". Ideales para acceso entre cuentas.</li>
+                        <li><strong>Listas de Control de Acceso (ACLs):</strong> Mecanismo heredado, complejo de auditar. La mejor práctica es deshabilitarlas.</li>
+                        <li><strong>Bloqueo de Acceso Público de S3:</strong> Anulación global para prevenir exposición accidental. Debe estar habilitada por defecto.</li>
+                    </ul>
+                    <h3 class="text-2xl font-bold mb-4 text-gray-800">Tabla 3: Mecanismos de Control de Acceso</h3>
+                     <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                                <tr><th class="px-6 py-3">Mecanismo</th><th class="px-6 py-3">Tipo</th><th class="px-6 py-3">Alcance</th><th class="px-6 py-3">Caso de Uso Principal</th><th class="px-6 py-3">Recomendación</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b"><td class="px-6 py-4 font-semibold">Política de IAM</td><td class="px-6 py-4">Basada en Identidad</td><td class="px-6 py-4">Usuarios, Grupos, Roles</td><td class="px-6 py-4">Gestionar permisos dentro de su cuenta.</td><td class="px-6 py-4 text-green-600 font-bold">Recomendado</td></tr>
+                                <tr class="border-b bg-gray-50"><td class="px-6 py-4 font-semibold">Política de Bucket</td><td class="px-6 py-4">Basada en Recurso</td><td class="px-6 py-4">Bucket</td><td class="px-6 py-4">Otorgar acceso entre cuentas; reglas a nivel de bucket.</td><td class="px-6 py-4 text-green-600 font-bold">Recomendado</td></tr>
+                                <tr class=""><td class="px-6 py-4 font-semibold">ACL</td><td class="px-6 py-4">Basada en Recurso</td><td class="px-6 py-4">Bucket y Objeto</td><td class="px-6 py-4">Casos heredados; conceder permisos a nivel de objeto.</td><td class="px-6 py-4 text-red-600 font-bold">Desaconsejado</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="content-card p-6">
+                    <h2 class="text-3xl font-bold mb-4">Gestión Inteligente: Versionado y Ciclo de Vida</h2>
+                    <p class="mb-4 text-gray-700">No son dos características separadas, sino un par simbiótico esencial para una gobernanza de datos efectiva.</p>
+                     <div class="space-y-4">
+                        <div>
+                            <h3 class="text-xl font-semibold mb-1">Versionado (Versioning)</h3>
+                            <p>Mantiene un historial completo de todas las versiones de los objetos. Cuando un objeto se "elimina", se crea un marcador de eliminación, pero las versiones anteriores se conservan. Es una herramienta poderosa para recuperarse de acciones accidentales.</p>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-1">Políticas de Ciclo de Vida (Lifecycle Policies)</h3>
+                            <p>Reglas que automatizan la gestión del ciclo de vida de un objeto. Las <strong>acciones de transición</strong> mueven objetos a clases de almacenamiento más baratas. Las <strong>acciones de expiración</strong> eliminan objetos permanentemente. Son cruciales para la gestión de costos.</p>
+                        </div>
+                    </div>
+                    <div class="mt-6 p-4 key-concept rounded-md">
+                        <h4 class="font-bold text-lg mb-2">Relación Simbiótica</h4>
+                        <p class="text-gray-800">Usar el versionado sin políticas de ciclo de vida es una receta para un crecimiento incontrolado de los costos. El versionado crea una responsabilidad de costos al acumular versiones antiguas, un problema que las políticas de ciclo de vida resuelven. <strong>Versionado para la recuperación, y políticas de ciclo de vida para el control de costos y la limpieza.</strong></p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="part3" class="space-y-8 tab-content hidden">
+                <div class="content-card p-6">
+                    <h2 class="text-3xl font-bold mb-4">Alojamiento de Sitios Web Estáticos</h2>
+                    <p class="mb-4 text-gray-700">S3 puede servir contenido web estático (HTML, CSS, JS) de forma extremadamente rentable y escalable. A menudo, esto evoluciona hacia una arquitectura sin servidor: el front-end estático en S3 llama a APIs (API Gateway) que ejecutan lógica de back-end (AWS Lambda).</p>
+                    <h3 class="text-xl font-semibold mb-2">Pasos de Implementación:</h3>
+                    <ol class="list-decimal list-inside space-y-2 text-gray-700">
+                        <li>Crear un bucket con un nombre globalmente único.</li>
+                        <li>Subir los ficheros del sitio web (index.html, error.html).</li>
+                        <li>Habilitar "Alojamiento de sitios web estáticos" en las propiedades del bucket.</li>
+                        <li>Deshabilitar "Bloquear todo el acceso público".</li>
+                        <li>Crear una política de bucket que otorgue acceso público de lectura (s3:GetObject).</li>
+                        <li>Acceder al sitio web a través del endpoint proporcionado por S3.</li>
+                    </ol>
+                </div>
+
+                 <div class="content-card p-6">
+                    <h2 class="text-3xl font-bold mb-4">Backup y Recuperación ante Desastres (DR)</h2>
+                    <p class="mb-4 text-gray-700">La alta durabilidad de S3 lo convierte en un destino ideal para copias de seguridad.</p>
+                    <ul class="space-y-3 mb-6">
+                        <li><strong>Replicación entre Regiones (CRR):</strong> Replica objetos a un bucket en una región diferente. Es la piedra angular de una estrategia de DR robusta, proporcionando redundancia geográfica.</li>
+                        <li><strong>Object Lock:</strong> Implementa un modelo WORM (Write-Once, Read-Many), impidiendo que los objetos se eliminen o sobrescriban. Crítico para cumplimiento normativo.</li>
+                        <li><strong>AWS Backup:</strong> Servicio centralizado que automatiza la copia de seguridad y restauración de datos de S3, gestionando planes, retención y recuperación a un punto en el tiempo.</li>
+                    </ul>
+                    <div class="mt-6 p-4 key-concept rounded-md border-l-4 border-yellow-500 bg-yellow-50">
+                        <h4 class="font-bold text-lg mb-2">Concepto Crítico: Replicación no es Backup</h4>
+                        <p class="text-gray-800">La replicación copia fielmente los cambios, incluidas las eliminaciones. No protege contra errores del usuario o corrupción lógica de datos. Un verdadero backup, gestionado por un servicio como AWS Backup, crea una copia inmutable y aislada en un punto en el tiempo en una ubicación segura (un almacén de copias de seguridad).</p>
+                    </div>
+                </div>
+
+                <div class="content-card p-6">
+                    <h2 class="text-3xl font-bold mb-4">Archivado de Datos a Largo Plazo</h2>
+                    <p class="mb-4 text-gray-700">S3 es una solución rentable para archivar datos, reemplazando los archivos de cinta tradicionales. Las Políticas de Ciclo de Vida automatizan la transición a estas clases de almacenamiento.</p>
+                     <ul class="space-y-2 text-gray-700">
+                        <li><strong>S3 Glacier Instant Retrieval:</strong> Para archivos que necesitan acceso en milisegundos.</li>
+                        <li><strong>S3 Glacier Flexible Retrieval:</strong> Recuperación en minutos u horas.</li>
+                        <li><strong>S3 Glacier Deep Archive:</strong> El almacenamiento de menor costo, para datos a los que se accede una o dos veces al año (recuperación en horas).</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div id="part4" class="space-y-8 tab-content hidden">
+                 <div class="content-card p-6">
+                    <h2 class="text-3xl font-bold mb-4">Comparación de Características y Arquitectura</h2>
+                    <p class="mb-4 text-gray-700">Los conceptos centrales se mapean directamente entre proveedores (Bucket/Objeto en AWS/GCP, Contenedor/Blob en Azure). Los tres ahora ofrecen una fuerte consistencia de lectura tras escritura.</p>
+                    <h3 class="text-xl font-semibold mb-2">Características Únicas:</h3>
+                    <ul class="list-disc list-inside space-y-2 mb-6 text-gray-700">
+                        <li><strong>AWS S3:</strong> Ecosistema más maduro, S3 Intelligent-Tiering para optimización automática de costos.</li>
+                        <li><strong>Azure Blob Storage:</strong> Integración profunda con el ecosistema de Microsoft (Entra ID), diferentes tipos de blobs.</li>
+                        <li><strong>Google Cloud Storage:</strong> Integración superior con Big Data y IA/ML (BigQuery), buckets multirregionales.</li>
+                    </ul>
+                    <h3 class="text-2xl font-bold mb-4 text-gray-800">Tabla 4: Matriz Comparativa de Características</h3>
+                    <div class="overflow-x-auto">
+                         <table class="w-full text-sm text-left">
+                           <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                                <tr><th class="px-6 py-3">Característica</th><th class="px-6 py-3">AWS S3</th><th class="px-6 py-3">Azure Blob Storage</th><th class="px-6 py-3">Google Cloud Storage</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b"><td class="px-6 py-4 font-semibold">Terminología</td><td class="px-6 py-4">Bucket / Objeto</td><td class="px-6 py-4">Contenedor / Blob</td><td class="px-6 py-4">Bucket / Objeto</td></tr>
+                                <tr class="border-b bg-gray-50"><td class="px-6 py-4 font-semibold">Niveles Únicos</td><td class="px-6 py-4">S3 Intelligent-Tiering</td><td class="px-6 py-4">Niveles Frío, Acceso esporádico</td><td class="px-6 py-4">Clases Autoclass</td></tr>
+                                <tr class="border-b"><td class="px-6 py-4 font-semibold">Características Únicas</td><td class="px-6 py-4">Puntos de Acceso Multi-Región</td><td class="px-6 py-4">Espacio de nombres jerárquico</td><td class="px-6 py-4">Buckets multirregionales</td></tr>
+                                <tr class="bg-gray-50"><td class="px-6 py-4 font-semibold">Fortaleza Ecosistema</td><td class="px-6 py-4">El más amplio y maduro</td><td class="px-6 py-4">Integración con Microsoft</td><td class="px-6 py-4">Integración con Google Analytics & IA/ML</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="content-card p-6">
+                    <h2 class="text-3xl font-bold mb-4">Deconstrucción del Modelo de Precios</h2>
+                    <p class="mb-4 text-gray-700">El precio se basa en tres componentes principales: almacenamiento (GB/mes), operaciones (solicitudes) y transferencia de datos (egress).</p>
+                    <div class="mt-6 p-4 key-concept rounded-md">
+                        <h4 class="font-bold text-lg mb-2">El Costo Oculto: Salida de Datos (Egress)</h4>
+                        <p class="text-gray-800">La transferencia de datos hacia la nube es generalmente gratuita, pero la transferencia hacia fuera a internet se cobra por GB. Para aplicaciones que sirven grandes cantidades de datos (p. ej., streaming de vídeo), los costos de salida pueden superar fácilmente los costos de almacenamiento. Utilizar una CDN es crítico para la optimización.</p>
+                    </div>
+                     <h3 class="text-2xl font-bold mt-6 mb-4 text-gray-800">Tabla 5: Comparación de Precios (Ilustrativa)</h3>
+                     <div class="overflow-x-auto">
+                         <table class="w-full text-sm text-left">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                                <tr><th class="px-6 py-3">Componente</th><th class="px-6 py-3">AWS S3 (us-east-1)</th><th class="px-6 py-3">Azure Blob (East US)</th><th class="px-6 py-3">Google Cloud (us-east1)</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b"><td class="px-6 py-4 font-semibold">Almac. Estándar (GB/mes)</td><td class="px-6 py-4">~$0.023</td><td class="px-6 py-4">~$0.018</td><td class="px-6 py-4">~$0.020</td></tr>
+                                <tr class="border-b bg-gray-50"><td class="px-6 py-4 font-semibold">Almac. Archivo (GB/mes)</td><td class="px-6 py-4">~$0.00099</td><td class="px-6 py-4">~$0.0012</td><td class="px-6 py-4">~$0.0012</td></tr>
+                                <tr class="border-b"><td class="px-6 py-4 font-semibold">Salida de Datos (GB)</td><td class="px-6 py-4">~$0.09</td><td class="px-6 py-4">~$0.087</td><td class="px-6 py-4">~$0.12</td></tr>
+                                <tr class="bg-gray-50"><td class="px-6 py-4 font-semibold">GETs (por 10,000)</td><td class="px-6 py-4">~$0.004</td><td class="px-6 py-4">~$0.004</td><td class="px-6 py-4">~$0.004</td></tr>
+                            </tbody>
+                        </table>
+                        <p class="text-xs text-gray-500 mt-2">Nota: Los precios son aproximados y están sujetos a cambios. Se muestran solo con fines ilustrativos.</p>
+                     </div>
+                </div>
+
+                <div class="content-card p-6">
+                    <h2 class="text-3xl font-bold mb-4">Recomendaciones Estratégicas</h2>
+                    <p class="mb-4 text-gray-700">La elección rara vez se hace en el vacío. Está influenciada por la "gravedad de los datos": el incentivo financiero para mantener el almacenamiento y el cómputo en el mismo ecosistema para evitar costosas tarifas de salida.</p>
+                    <div class="space-y-4">
+                        <div>
+                            <h3 class="text-xl font-semibold mb-1">Elija AWS S3 si...</h3>
+                            <p>...está fuertemente invertido en el ecosistema de AWS, requiere el conjunto más amplio de características e integraciones, o necesita máxima flexibilidad. Es el líder del mercado y la elección "por defecto".</p>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-1">Elija Azure Blob Storage si...</h3>
+                            <p>...su organización es un "Microsoft shop", dependiendo de Windows Server, Entra ID y otros servicios de Azure. La integración perfecta lo hace convincente en este contexto.</p>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-1">Elija Google Cloud Storage si...</h3>
+                            <p>...su carga de trabajo principal implica análisis de datos a gran escala (BigQuery), pipelines de IA/ML, o es un usuario intensivo de Google Workspace. Su rendimiento en transferencias grandes es una ventaja.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const tabs = document.querySelectorAll('nav button');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => {
+                t.classList.remove('tab-active');
+                t.classList.add('tab-inactive');
+            });
+            tab.classList.remove('tab-inactive');
+            tab.classList.add('tab-active');
+
+            tabContents.forEach(content => {
+                content.classList.add('hidden');
+            });
+            document.getElementById(tab.dataset.tab).classList.remove('hidden');
+            window.scrollTo(0, 0);
+        });
+    });
+});
+</script>
+</body>
+</html>
+
+

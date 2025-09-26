@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratorio Interactivo: Mi Primer Sitio Web con S3</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <!-- Chosen Palette: Slate & Sky Blue -->
+    <!-- Application Structure Plan: A two-column layout is used. The left column contains a sticky navigation sidebar that allows users to jump between the different parts of the lab. The right column displays the detailed step-by-step content. This structure is ideal for a long-form tutorial, as it provides easy navigation and a clear sense of progress, enhancing the user's learning experience. -->
+    <!-- Visualization & Content Choices: The lab content is presented using structured HTML. Key interactive elements include 'Copy to Clipboard' buttons for all code snippets (HTML and JSON), which is a critical usability feature for a technical tutorial. Important notes and warnings are highlighted in colored boxes to draw attention. The primary interaction is the smooth-scrolling navigation, which guides the user through the practical exercise. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        .sidebar-link.active {
+            background-color: #e0f2fe;
+            color: #0c4a6e;
+            font-weight: 600;
+        }
+        .content-section h2 {
+            scroll-margin-top: 80px;
+        }
+        code[class*="language-"], pre[class*="language-"] {
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 14px;
+        }
+        .copy-button {
+            transition: all 0.2s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <div class="container mx-auto">
+        <div class="flex flex-col md:flex-row">
+            <!-- Sidebar -->
+            <aside class="w-full md:w-1/4 lg:w-1/5 p-4 md:p-6 md:sticky md:top-0 md:h-screen md:overflow-y-auto bg-white border-r border-slate-200">
+                <h1 class="text-xl font-bold text-sky-800 mb-6">Menú del Laboratorio</h1>
+                <nav>
+                    <ul class="space-y-2">
+                        <li><a href="#intro" class="sidebar-link block px-4 py-2 rounded-md text-slate-600 hover:bg-slate-100">Introducción</a></li>
+                        <li><a href="#part1" class="sidebar-link block px-4 py-2 rounded-md text-slate-600 hover:bg-slate-100">Parte 1: Crear el Bucket</a></li>
+                        <li><a href="#part2" class="sidebar-link block px-4 py-2 rounded-md text-slate-600 hover:bg-slate-100">Parte 2: Cargar Contenido</a></li>
+                        <li><a href="#part3" class="sidebar-link block px-4 py-2 rounded-md text-slate-600 hover:bg-slate-100">Parte 3: Seguridad y Acceso</a></li>
+                        <li><a href="#part4" class="sidebar-link block px-4 py-2 rounded-md text-slate-600 hover:bg-slate-100">Parte 4: Habilitar Sitio Web</a></li>
+                        <li><a href="#part5" class="sidebar-link block px-4 py-2 rounded-md text-slate-600 hover:bg-slate-100">Parte 5: Versionado</a></li>
+                        <li><a href="#part6" class="sidebar-link block px-4 py-2 rounded-md text-slate-600 hover:bg-slate-100">Parte 6: Limpieza</a></li>
+                        <li><a href="#conclusion" class="sidebar-link block px-4 py-2 rounded-md text-slate-600 hover:bg-slate-100">Conclusión</a></li>
+                    </ul>
+                </nav>
+                 <div class="mt-8 text-xs text-slate-400">
+                    <p>Fecha de Creación: 25 de Septiembre, 2025</p>
+                    <p>Ubicación: Medellín, Colombia</p>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="w-full md:w-3/4 lg:w-4/5 p-6 md:p-10">
+                
+                <section id="intro" class="content-section mb-16">
+                    <h2 class="text-3xl font-bold border-b border-slate-300 pb-4 mb-6 text-sky-900">Laboratorio: Mi Primer Sitio Web Estático con S3</h2>
+                    <p class="text-lg mb-4">Al finalizar este ejercicio, habrás desplegado una página web estática simple, accesible globalmente a través de Amazon S3.</p>
+                    <div class="bg-sky-50 border-l-4 border-sky-500 text-sky-800 p-4 rounded-r-lg">
+                        <h4 class="font-bold mb-2">Conceptos a Practicar:</h4>
+                        <ul class="list-disc list-inside text-sm">
+                            <li>Creación y configuración de Buckets S3.</li>
+                            <li>Gestión de Acceso Público y Políticas de Bucket.</li>
+                            <li>Habilitación del Alojamiento de Sitios Web Estáticos.</li>
+                            <li>Versionado de Objetos como mecanismo de protección.</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section id="part1" class="content-section mb-16">
+                    <h2 class="text-3xl font-bold border-b border-slate-300 pb-4 mb-6 text-sky-900">Parte 1: La Fundación - Crear el Bucket</h2>
+                    <p class="mb-4">El primer paso en S3 es siempre crear un "bucket". Piensa en un bucket como una carpeta raíz en la nube donde vivirán todos los archivos de tu proyecto.</p>
+                    <ol class="list-decimal list-inside space-y-4">
+                        <li><strong>Navegar a la Consola de S3:</strong> Inicia sesión en tu Consola de AWS, busca <strong>S3</strong> y haz clic en <strong>"Crear bucket"</strong>. </li>
+                        <li>
+                            <strong>Configurar los Detalles del Bucket:</strong>
+                            <ul class="list-disc list-inside ml-6 mt-2 space-y-2">
+                                <li><strong>Nombre del bucket:</strong> Debe ser único a nivel mundial. Usa un formato como: <code>mi-sitio-web-YYYYMMDD-iniciales</code>.</li>
+                                <li><strong>Región de AWS:</strong> Selecciona la más cercana a tus usuarios, ej: <code>us-east-1 (Norte de Virginia)</code>.</li>
+                                <li><strong>Configuración de propiedad de objetos:</strong> Deja la opción recomendada: <strong>ACL deshabilitadas</strong>.</li>
+                                <li><strong>Bloquear todo el acceso público:</strong> ¡MUY IMPORTANTE! Deja esta opción <strong>marcada</strong> por ahora. La seguridad es primero.</li>
+                            </ul>
+                        </li>
+                        <li><strong>Crear el Bucket:</strong> Revisa la configuración y haz clic en <strong>"Crear bucket"</strong>.</li>
+                    </ol>
+                </section>
+
+                <section id="part2" class="content-section mb-16">
+                    <h2 class="text-3xl font-bold border-b border-slate-300 pb-4 mb-6 text-sky-900">Parte 2: Añadiendo Contenido</h2>
+                    <p class="mb-4">Un bucket vacío no es útil. Ahora cargaremos los archivos HTML que conformarán nuestro sitio web.</p>
+                    <h3 class="text-xl font-semibold mb-3">2.1 Preparar Archivos Locales</h3>
+                    <p class="mb-2">Crea dos archivos en tu computadora:</p>
+                    
+                    <div class="mb-4">
+                        <label class="font-semibold">Archivo 1: <code>index.html</code></label>
+                        <div class="relative mt-1">
+                            <pre class="bg-slate-800 text-white p-4 rounded-lg overflow-x-auto"><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;¡Nuestro Proyecto Despega!&lt;/title&gt;
+    &lt;style&gt;
+        body { font-family: Arial, sans-serif; text-align: center; margin-top: 100px; background-color: #f0f8ff; }
+        h1 { color: #0056b3; }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;¡Próximamente!&lt;/h1&gt;
+    &lt;p&gt;Nuestro increíble proyecto está en construcción.&lt;/p&gt;
+    &lt;p&gt;Versión 1.0&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+                            <button class="copy-button absolute top-2 right-2 bg-slate-600 hover:bg-slate-500 text-white text-xs font-bold py-1 px-2 rounded" data-clipboard-target="part2-code1">
+                                <i class="fas fa-copy"></i> Copiar
+                            </button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="font-semibold">Archivo 2: <code>error.html</code></label>
+                         <div class="relative mt-1">
+                            <pre class="bg-slate-800 text-white p-4 rounded-lg overflow-x-auto"><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;Página no Encontrada&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Oops... Algo salió mal.&lt;/h1&gt;
+    &lt;p&gt;No pudimos encontrar la página que buscas.&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+                            <button class="copy-button absolute top-2 right-2 bg-slate-600 hover:bg-slate-500 text-white text-xs font-bold py-1 px-2 rounded" data-clipboard-target="part2-code2">
+                                <i class="fas fa-copy"></i> Copiar
+                            </button>
+                        </div>
+                    </div>
+
+                    <h3 class="text-xl font-semibold mt-6 mb-3">2.2 Cargar y Verificar</h3>
+                     <ol class="list-decimal list-inside space-y-3">
+                        <li>En tu bucket, haz clic en <strong>"Cargar"</strong> y añade los dos archivos.</li>
+                        <li>Una vez cargados, haz clic en <code>index.html</code> y copia la <strong>"URL del objeto"</strong>.</li>
+                        <li>Pégala en tu navegador. Deberías ver un error <strong>"Access Denied"</strong>. ¡Perfecto! La seguridad funciona. </li>
+                    </ol>
+                </section>
+                
+                <section id="part3" class="content-section mb-16">
+                    <h2 class="text-3xl font-bold border-b border-slate-300 pb-4 mb-6 text-sky-900">Parte 3: Seguridad y Acceso Público</h2>
+                    <p class="mb-4">Para que el sitio sea visible, debemos desactivar el bloqueo general y crear una política de bucket que solo permita la lectura pública.</p>
+                    <ol class="list-decimal list-inside space-y-6">
+                        <li>
+                            <strong>Desactivar Bloqueo de Acceso Público:</strong>
+                            <ul class="list-disc list-inside ml-6 mt-2">
+                                <li>Ve a la pestaña <strong>"Permisos"</strong> de tu bucket.</li>
+                                <li>En "Bloquear acceso público", haz clic en "Editar".</li>
+                                <li>Desmarca <strong>"Bloquear *todo* el acceso público"</strong>, escribe <code>confirmar</code> y guarda los cambios.</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>Crear una Política de Bucket:</strong>
+                            <p class="mt-2 mb-2">En la misma pestaña de "Permisos", edita la "Política de bucket". Pega el siguiente JSON, <strong>reemplazando <code>NOMBRE_DE_TU_BUCKET</code></strong> con el nombre real de tu bucket.</p>
+                            <div class="bg-amber-50 border-l-4 border-amber-500 text-amber-900 p-4 rounded-r-lg mb-4 text-sm">
+                                <h4 class="font-bold">Análisis de la Política</h4>
+                                <ul class="list-disc list-inside mt-2">
+                                     <li><code>"Effect": "Allow"</code>: Estamos creando una regla de permiso.</li>
+                                     <li><code>"Principal": "*"</code>: El asterisco significa "cualquiera" o anónimo.</li>
+                                     <li><code>"Action": "s3:GetObject"</code>: La acción permitida es solo leer/descargar.</li>
+                                     <li><code>"Resource": ".../*"</code>: La regla se aplica a todos los objetos (`/*`) dentro de tu bucket.</li>
+                                </ul>
+                            </div>
+                            <div class="relative">
+                                <pre class="bg-slate-800 text-white p-4 rounded-lg overflow-x-auto"><code class="language-json">{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "PublicReadGetObject",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::NOMBRE_DE_TU_BUCKET/*"
+        }
+    ]
+}</code></pre>
+                                <button class="copy-button absolute top-2 right-2 bg-slate-600 hover:bg-slate-500 text-white text-xs font-bold py-1 px-2 rounded" data-clipboard-target="part3-code1">
+                                    <i class="fas fa-copy"></i> Copiar
+                                </button>
+                            </div>
+                        </li>
+                         <li><strong>Probar de Nuevo:</strong> Vuelve a abrir la URL del objeto <code>index.html</code>. ¡Ahora deberías ver tu página web!</li>
+                    </ol>
+                </section>
+                
+                <section id="part4" class="content-section mb-16">
+                     <h2 class="text-3xl font-bold border-b border-slate-300 pb-4 mb-6 text-sky-900">Parte 4: Habilitar el Alojamiento de Sitios Web</h2>
+                    <p class="mb-4">S3 aún no se comporta como un servidor web (no conoce el archivo de índice o error). Vamos a configurarlo.</p>
+                     <ol class="list-decimal list-inside space-y-4">
+                        <li>Ve a la pestaña <strong>"Propiedades"</strong> de tu bucket y busca <strong>"Alojamiento de sitios web estáticos"</strong>. Haz clic en "Editar".</li>
+                        <li>Selecciona <strong>"Habilitar"</strong>.
+                            <ul class="list-disc list-inside ml-6 mt-2">
+                                <li><strong>Documento de índice:</strong> <code>index.html</code></li>
+                                <li><strong>Documento de error:</strong> <code>error.html</code></li>
+                            </ul>
+                        </li>
+                        <li>Guarda los cambios. Ahora, en la misma sección, encontrarás el <strong>endpoint del sitio web del bucket</strong>. Esta es la URL oficial de tu sitio. ¡Pruébala!</li>
+                    </ol>
+                </section>
+
+                <section id="part5" class="content-section mb-16">
+                     <h2 class="text-3xl font-bold border-b border-slate-300 pb-4 mb-6 text-sky-900">Parte 5: Versionado como Red de Seguridad</h2>
+                     <p class="mb-4">El versionado te protege contra eliminaciones o sobrescrituras accidentales.</p>
+                     <ol class="list-decimal list-inside space-y-4">
+                        <li>En la pestaña <strong>"Propiedades"</strong>, edita <strong>"Versionado del bucket"</strong> y selecciona <strong>"Habilitar"</strong>.</li>
+                        <li><strong>Simula un cambio:</strong> Modifica tu <code>index.html</code> local (ej: cambia "Versión 1.0" por "Versión 2.0") y súbelo de nuevo, sobrescribiendo el anterior.</li>
+                        <li><strong>Simula un borrado:</strong> Ahora, selecciona <code>index.html</code> en la consola y elimínalo. Tu sitio web debería mostrar un error.</li>
+                        <li><strong>Recupera tus datos:</strong> En la pestaña "Objetos", activa el interruptor <strong>"Mostrar versiones"</strong>. Verás todo el historial. Para restaurar, simplemente selecciona el <strong>"marcador de eliminación"</strong> y elimínalo. La versión más reciente (v2.0) volverá a ser la actual.</li>
+                    </ol>
+                </section>
+                
+                <section id="part6" class="content-section mb-16">
+                     <h2 class="text-3xl font-bold border-b border-slate-300 pb-4 mb-6 text-sky-900">Parte 6: Limpieza de Recursos</h2>
+                     <p class="mb-4">Es fundamental en la nube eliminar siempre los recursos que no estás utilizando para evitar costos.</p>
+                      <ol class="list-decimal list-inside space-y-4">
+                        <li><strong>Vaciar el Bucket:</strong> S3 no te permitirá eliminar un bucket que no esté vacío. En la página de tu bucket, haz clic en <strong>"Vaciar"</strong>. Confirma la acción para eliminar permanentemente todos los objetos y sus versiones.</li>
+                        <li><strong>Eliminar el Bucket:</strong> Una vez vacío, vuelve a la lista principal de buckets, selecciona el tuyo y haz clic en <strong>"Eliminar"</strong>. Confirma escribiendo el nombre del bucket.</li>
+                    </ol>
+                </section>
+
+                <section id="conclusion" class="content-section">
+                    <h2 class="text-3xl font-bold border-b border-slate-300 pb-4 mb-6 text-sky-900">¡Felicidades y Próximos Pasos!</h2>
+                    <p class="mb-4">Has completado con éxito un ciclo de vida completo de un proyecto básico en S3. Has aprendido a crear un bucket, gestionarlo de forma segura, servir contenido y protegerlo con versionado.</p>
+                    <div class="bg-green-50 border-l-4 border-green-500 text-green-800 p-4 rounded-r-lg">
+                        <h4 class="font-bold mb-2">Para seguir explorando:</h4>
+                        <ul class="list-disc list-inside text-sm">
+                            <li><strong>Dominio Personalizado:</strong> Investiga cómo usar <strong>Amazon Route 53</strong>.</li>
+                            <li><strong>Aceleración de Contenido (CDN):</strong> Aprende sobre <strong>Amazon CloudFront</strong>.</li>
+                            <li><strong>Optimización de Costos:</strong> Investiga las <strong>Políticas de Ciclo de Vida</strong> de S3.</li>
+                        </ul>
+                    </div>
+                </section>
+
+            </main>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const copyButtons = document.querySelectorAll('.copy-button');
+            copyButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetId = button.getAttribute('data-clipboard-target');
+                    const preElement = button.parentElement.querySelector('pre');
+                    const code = preElement.querySelector('code').innerText;
+
+                    navigator.clipboard.writeText(code).then(() => {
+                        const originalText = button.innerHTML;
+                        button.innerHTML = '<i class="fas fa-check"></i> Copiado!';
+                        button.classList.remove('bg-slate-600', 'hover:bg-slate-500');
+                        button.classList.add('bg-green-600');
+                        
+                        setTimeout(() => {
+                            button.innerHTML = originalText;
+                            button.classList.remove('bg-green-600');
+                            button.classList.add('bg-slate-600', 'hover:bg-slate-500');
+                        }, 2000);
+                    }).catch(err => {
+                        console.error('Failed to copy text: ', err);
+                    });
+                });
+            });
+
+            const sections = document.querySelectorAll('.content-section');
+            const navLinks = document.querySelectorAll('.sidebar-link');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href').substring(1) === entry.target.id) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, { rootMargin: "-50% 0px -50% 0px" });
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+        });
+    </script>
+</body>
+</html>
